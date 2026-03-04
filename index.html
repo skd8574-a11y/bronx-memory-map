@@ -133,21 +133,32 @@
       font-size:12px;
     }
 
-    .map-wrap{position:relative;}
-    #map{height:100%; width:100%;}
-    .legend{
-      position:absolute;
-      right:12px;
-      top:12px;
-      background:rgba(10,14,22,.8);
-      border:1px solid var(--line);
-      padding:10px 12px;
-      border-radius:12px;
-      font-size:12px;
-      color:var(--muted);
-      max-width:300px;
-      backdrop-filter: blur(8px);
-    }
+    .map-wrap{
+  position:relative;
+}
+
+#map{
+  height:100%;
+  width:100%;
+  filter: brightness(.9) saturate(.9);
+}
+
+/* Museum-style vignette */
+.map-wrap::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(0,0,0,0) 45%,
+      rgba(0,0,0,.35) 100%
+    );
+} 
+backdrop-filter: blur(8px);
+    
     .legend b{color:var(--text)}
     .legend a{color:var(--accent2)}
     .small{
@@ -158,9 +169,9 @@
     }
 
     .popup h2{
-      margin:0 0 8px 0;
-      font-size:16px;
-    }
+  font-size:20px;
+  font-weight:600;
+}
     .popup .pmeta{
       display:flex;
       flex-wrap:wrap;
@@ -186,6 +197,55 @@
       word-break:break-word;
       font-size:12.5px;
     }
+    /* ===== Card styling (sidebar) ===== */
+.card{
+  border:1px solid rgba(34,48,74,0.9);
+  border-left:3px solid #7fe7d3;
+  background:rgba(12,20,36,.55);
+  border-radius:14px;
+  padding:12px 12px;
+  cursor:pointer;
+  transition:transform .12s ease, border-color .12s ease;
+}
+.card:hover{
+  transform: translateY(-1px);
+  border-color:#3b4f78;
+  background:rgba(14,26,46,.75);
+}
+.card h3{
+  margin:0 0 8px 0;
+  font-size:16px;
+  line-height:1.2;
+  letter-spacing:.2px;
+}
+.meta{ display:flex; flex-wrap:wrap; gap:8px; }
+
+/* ===== Leaflet popup overrides (make it dark + readable) ===== */
+.leaflet-popup-content-wrapper{
+  background:linear-gradient(180deg, rgba(15,22,36,.98), rgba(10,14,22,.98)) !important;
+  color:#e9eef9 !important;
+  border:1px solid #2a3b5c !important;
+  border-radius:16px !important;
+  box-shadow:0 24px 70px rgba(0,0,0,.55) !important;
+}
+.leaflet-popup-tip{
+  background:rgba(12,20,36,.98) !important;
+  border:1px solid #2a3b5c !important;
+}
+.leaflet-popup-content{ margin:14px 14px !important; }
+
+.popup h2{
+  margin:0 0 10px 0;
+  font-size:18px;
+  letter-spacing:.2px;
+}
+.popup p{
+  margin:0 0 10px 0;
+  font-size:13.5px;
+  line-height:1.55;
+  color:#f1f5ff !important;   /* THIS is the visibility fix */
+}
+.small{ color:#a9b6d3; }
     .media{
       display:grid;
       gap:10px;
@@ -198,18 +258,90 @@
       display:block;
     }
     .media iframe{
-      width:100%;
-      aspect-ratio: 16/9;
-      border:0;
-      border-radius:12px;
-      border:1px solid #2a3b5c;
-    }
+  width:100%;
+  aspect-ratio: 16/9;
+  border:0;
+  border-radius:12px;
+  border:1px solid #2a3b5c;
+}
 
     @media (max-width: 980px){
       .app{grid-template-columns:1fr; grid-template-rows:auto 1fr;}
       .sidebar{height:46vh}
       .map-wrap{height:54vh}
+
+     .archive-label{
+  font-size:10px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:rgba(127,231,211,.9);
+  margin-bottom:6px;
+  opacity:.9;
+}
     }
+    /* --- ARCHIVAL POPUP (Leaflet override) --- */
+.leaflet-popup-content-wrapper{
+  background: rgba(9, 13, 22, 0.96) !important; /* ink-dark */
+  color: #f2f6ff !important;
+  border: 1px solid rgba(184,167,255,0.28) !important;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.55) !important;
+  border-radius: 16px !important;
+}
+
+.leaflet-popup-tip{
+  background: rgba(9, 13, 22, 0.96) !important;
+  box-shadow: none !important;
+  border: 1px solid rgba(184,167,255,0.25) !important;
+}
+
+.leaflet-popup-content{
+  margin: 14px 16px 16px 16px !important;
+  width: 320px !important;  /* makes it feel like a record card */
+}
+
+.popup h2{
+  font-size: 18px;
+  margin: 6px 0 8px 0;
+  color: #ffffff;
+  letter-spacing: 0.2px;
+}
+
+.popup p{
+  color:#e8efff !important;
+  font-size:14px;
+  line-height:1.65;
+  letter-spacing:.2px;
+}
+
+/* archival label line */
+.archive-label{
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(127,231,211,0.9);
+  margin-bottom: 6px;
+}
+
+/* make chips feel more intentional */
+.chip{
+  background: rgba(26,39,64,0.9);
+  border: 1px solid rgba(127,231,211,0.18);
+  color: #d7e6ff;
+}
+
+/* image frame: feels like a mounted print */
+.media img{
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.35);
+}
+
+/* credit looks like a caption label */
+.popup .small{
+  color: rgba(169,182,211,0.95);
+  font-size: 11px;
+  margin-top: 8px;
+}
   </style>
 </head>
 
@@ -291,7 +423,30 @@
     // ENTRIES (EMPTY ON PURPOSE)
     // Add your approved entries here later.
     // -----------------------------------------
-    const entries = [];
+   const entries = [
+{
+  id: "BX-0001",
+  title: "Looking out from the Bronx",
+  neighborhood: "Soundview",
+  decade: "2020s",
+  tags: ["growing-up-in-the-bronx","the-block","migration-stories"],
+  lat: 40.8200,
+  lng: -73.8800,
+  story: `I took this photo looking out across the Bronx skyline. It’s the kind of view you see when you’re moving through the city, from a train, a bridge, somewhere in between places.
+
+I’ve spent a lot of time thinking about leaving the Bronx, coming back to it, and trying to understand what it means to carry a place with you even when you’re somewhere else.
+
+So much of what gets written about the Bronx comes from outside of it. This archive is trying to hold something different. It's about the small memories people carry with them. The places that stay with you even when you leave.
+
+This photo feels like that moment: looking out, looking back, trying to see the Bronx again.`,
+
+  artifact:{
+    type:"image",
+    url:"assets/images/bronx-skyline.jpg",
+    credit:"Contributor submission (anonymous)"
+  }
+}
+];
 
     /*
     // Example entry structure (COMMENTED OUT — not rendered):
@@ -318,12 +473,33 @@
 
     // ---------------- Map setup ----------------
     const map = L.map("map", { zoomControl: true })
-      .setView([40.8448, -73.8648], 12); // Bronx center-ish
+      .setView([40.8448, -73.8648], 13); // Bronx center-ish
+      // Keep the map mostly focused on the Bronx
+const bronxBounds = L.latLngBounds(
+  [40.785, -73.933], // SW-ish
+  [40.915, -73.765]  // NE-ish
+);
+
+map.setMaxBounds(bronxBounds);
+map.fitBounds(bronxBounds);
+map.options.maxBoundsViscosity = 0.9; // “rubber band” effect
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+  maxZoom: 19,
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+/* darken map so archive elements stand out */
+L.rectangle(
+  [[40.6,-74.2],[41.0,-73.6]],
+  {
+    color: "transparent",
+    fillColor: "#000",
+    fillOpacity: 0.22,
+    interactive:false
+  }
+).addTo(map);
+  
 
     const markerLayer = L.layerGroup().addTo(map);
     const markerById = new Map();
@@ -361,19 +537,26 @@
           </div>`;
       }
 
-      return `
-        <div class="popup">
-          <h2>${escapeHtml(e.title)}</h2>
-          <div class="pmeta">
-            <span class="chip">${escapeHtml(e.neighborhood)}</span>
-            <span class="chip">${escapeHtml(e.decade)}</span>
-            ${tagChips}
-          </div>
-          <p>${escapeHtml(e.story)}</p>
-          ${song}
-          ${mediaHtml}
-        </div>
-      `;
+return `
+  <div class="popup">
+  <div class="archive-label">AGAINST THE CAPTION • BRONX MEMORY MAP</div>
+
+    <h2>${escapeHtml(e.title)}</h2>
+
+    <div class="pmeta">
+      <span class="chip">${escapeHtml(e.neighborhood)}</span>
+      <span class="chip">${escapeHtml(e.decade)}</span>
+      ${tagChips}
+    </div>
+
+    <p>${escapeHtml(e.story)}</p>
+
+    ${song}
+    ${mediaHtml}
+
+    
+  </div>
+`;
     }
 
     function uniqueSorted(arr){
@@ -395,12 +578,12 @@
 
       list.forEach(e => {
         const m = L.circleMarker([e.lat, e.lng], {
-          radius: 7,
-          weight: 2,
-          color: "#b8a7ff",
-          fillColor: "#7fe7d3",
-          fillOpacity: 0.65
-        }).addTo(markerLayer);
+  radius: 11,
+  weight: 3,
+  color: "#0b0f17",
+  fillColor: "#7fe7d3",
+  fillOpacity: 0.95
+}).addTo(markerLayer);
 
         m.bindPopup(popupHtml(e), { maxWidth: 340 });
         markerById.set(e.id, m);
@@ -423,21 +606,20 @@
         return;
       }
 
-      cards.innerHTML = list.map(e => {
-        const chips = [
-          `<span class="chip">${escapeHtml(e.neighborhood)}</span>`,
-          `<span class="chip">${escapeHtml(e.decade)}</span>`,
-          ...(e.tags || []).slice(0,2).map(t => `<span class="chip">${escapeHtml(t)}</span>`)
-        ].join("");
-        const excerpt = (e.story || "").slice(0, 140) + ((e.story || "").length > 140 ? "…" : "");
-        return `
-          <article class="card" data-id="${escapeAttr(e.id)}">
-            <h3>${escapeHtml(e.title)}</h3>
-            <div class="meta">${chips}</div>
-            <p class="excerpt">${escapeHtml(excerpt)}</p>
-          </article>
-        `;
-      }).join("");
+     cards.innerHTML = list.map(e => {
+  const chips = [
+    `<span class="chip">${escapeHtml(e.neighborhood)}</span>`,
+    `<span class="chip">${escapeHtml(e.decade)}</span>`,
+    ...(e.tags || []).slice(0,3).map(t => `<span class="chip">${escapeHtml(t)}</span>`)
+  ].join("");
+
+  return `
+    <article class="card" data-id="${escapeAttr(e.id)}">
+      <h3>${escapeHtml(e.title)}</h3>
+      <div class="meta">${chips}</div>
+    </article>
+  `;
+}).join("");
 
       // click -> open popup + zoom
       cards.querySelectorAll(".card").forEach(card => {
