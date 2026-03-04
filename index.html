@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Against the Caption — Bronx Memory Map (Prototype)</title>
+
+  <!-- Leaflet -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+
+  <style>
+    :root{
+      --bg:#0b0f17;
+      --panel:#0f1624;
+      --panel2:#111b2c;
+      --text:#e9eef9;
+      --muted:#a9b6d3;
+      --line:#22304a;
+      --chip:#1a2740;
+      --accent:#b8a7ff;
+      --accent2:#7fe7d3;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background:var(--bg);
+      color:var(--text);
+    }
+    .app{
+      display:grid;
+      grid-template-columns: 420px 1fr;
+      height:100vh;
+      overflow:hidden;
+    }
+    .sidebar{
+      background:linear-gradient(180deg,var(--panel),var(--panel2));
+      border-right:1px solid var(--line);
+      padding:18px 16px;
+      overflow:auto;
+    }
+    .title{
+      font-size:20px;
+      font-weight:700;
+      margin:0 0 6px 0;
+    }
+    .subtitle{
+      margin:0 0 14px 0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
+    .top-actions{
+      display:flex;
+      gap:10px;
+      margin:10px 0 16px 0;
+      flex-wrap:wrap;
+    }
+    .btn{
+      appearance:none;
+      border:1px solid var(--line);
+      background:#0f1a2e;
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:10px;
+      font-weight:600;
+      font-size:13px;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .btn:hover{border-color:#324567}
+    .btn.primary{
+      background:linear-gradient(135deg, rgba(184,167,255,.2), rgba(127,231,211,.15));
+      border-color:#3b4f78;
+    }
+
+    .filters{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-bottom:14px;
+    }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    label{
+      font-size:12px;
+      color:var(--muted);
+    }
+    input, select{
+      width:100%;
+      padding:10px 10px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:#0c1424;
+      color:var(--text);
+      outline:none;
+    }
+    input::placeholder{color:#7f8fb3}
+    .count{
+      color:var(--muted);
+      font-size:12px;
+      margin:8px 0 10px 0;
+    }
+
+    .cards{display:flex; flex-direction:column; gap:10px;}
+    .empty-state{
+      border:1px dashed #2a3b5c;
+      background:rgba(12,20,36,.55);
+      border-radius:14px;
+      padding:14px 12px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.4;
+    }
+    .empty-state code{
+      color:#cfe0ff;
+      font-size:12px;
+    }
+
+    .map-wrap{position:relative;}
+    #map{height:100%; width:100%;}
+    .legend{
+      position:absolute;
+      right:12px;
+      top:12px;
+      background:rgba(10,14,22,.8);
+      border:1px solid var(--line);
+      padding:10px 12px;
+      border-radius:12px;
+      font-size:12px;
+      color:var(--muted);
+      max-width:300px;
+      backdrop-filter: blur(8px);
+    }
+    .legend b{color:var(--text)}
+    .legend a{color:var(--accent2)}
+    .small{
+      font-size:11px;
+      color:#91a4c9;
+      margin-top:6px;
+      line-height:1.35;
+    }
+
+    .popup h2{
+      margin:0 0 8px 0;
+      font-size:16px;
+    }
+    .popup .pmeta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-bottom:10px;
+    }
+    .chip{
+      font-size:12px;
+      padding:4px 8px;
+      border-radius:999px;
+      background:var(--chip);
+      border:1px solid #2a3b5c;
+      color:#cfe0ff;
+    }
+    .popup p{
+      margin:0 0 10px 0;
+      font-size:13px;
+      line-height:1.4;
+      color:#d5def3;
+    }
+    .links a{
+      color:var(--accent2);
+      word-break:break-word;
+      font-size:12.5px;
+    }
+    .media{
+      display:grid;
+      gap:10px;
+      margin-top:10px;
+    }
+    .media img{
+      width:100%;
+      border-radius:12px;
+      border:1px solid #2a3b5c;
+      display:block;
+    }
+    .media iframe{
+      width:100%;
+      aspect-ratio: 16/9;
+      border:0;
+      border-radius:12px;
+      border:1px solid #2a3b5c;
+    }
+
+    @media (max-width: 980px){
+      .app{grid-template-columns:1fr; grid-template-rows:auto 1fr;}
+      .sidebar{height:46vh}
+      .map-wrap{height:54vh}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <h1 class="title">Against the Caption — Bronx Memory Map</h1>
+      <p class="subtitle">
+        A Bronx-centered, community-rooted memory archive. Entries are mapped with <b>approximate locations</b> to protect privacy.
+      </p>
+
+      <div class="top-actions">
+        <!-- Paste your real Tally link here -->
+        <a class="btn primary" id="submitLink" href="https://tally.so/r/REPLACE_ME" target="_blank" rel="noreferrer">
+          Submit a memory
+        </a>
+        <button class="btn" id="resetBtn" type="button">Reset</button>
+      </div>
+
+      <div class="filters">
+        <div class="field">
+          <label for="q">Search</label>
+          <input id="q" placeholder="title, neighborhood, tags, text…" />
+        </div>
+        <div class="field">
+          <label for="decade">Decade</label>
+          <select id="decade">
+            <option value="all">All</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="hood">Neighborhood</label>
+          <select id="hood">
+            <option value="all">All</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="tag">Tag</label>
+          <select id="tag">
+            <option value="all">All</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="count" id="count">0 entries</div>
+
+      <section class="cards" id="cards">
+        <div class="empty-state">
+          No entries yet — this is intentionally blank.<br/><br/>
+          When you’re ready, add items inside the <code>entries</code> array in the code.<br/>
+          (A commented example structure is included in the file.)
+        </div>
+      </section>
+    </aside>
+
+    <main class="map-wrap">
+      <div id="map"></div>
+      <div class="legend">
+        <b>Flow</b><br/>
+        Tally submission → you review → you publish approved entries on this map site (GitHub Pages).<br/>
+        <div class="small">
+          Tip: On Tally, add a final “Thank you” page that links back to this map.
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    /**
+     * ✅ YOU ONLY NEED TO EDIT TWO THINGS:
+     * 1) submitUrl: paste your Tally form link
+     * 2) entries: add your approved archive entries here (currently empty)
+     */
+
+    const submitUrl = "https://tally.so/r/81dD5O"; // <-- paste your real Tally link
+    document.getElementById("submitLink").href = submitUrl;
+
+    // -----------------------------------------
+    // ENTRIES (EMPTY ON PURPOSE)
+    // Add your approved entries here later.
+    // -----------------------------------------
+    const entries = [];
+
+    /*
+    // Example entry structure (COMMENTED OUT — not rendered):
+    entries.push({
+      id: "BX-0001",
+      title: "Example title",
+      neighborhood: "Mott Haven",
+      decade: "1980s",
+      tags: ["street-life","music","refusal"],
+      lat: 40.8090,
+      lng: -73.9226, // approximate on purpose
+      story: "Short memory text goes here.",
+      // Optional: link-only for songs (recommended)
+      songLink: "https://www.youtube.com/watch?v=XXXXXXXXXXX",
+      // Optional: artifacts
+      artifact: {
+        // type can be: "image" | "video" | "none"
+        type: "image",
+        url: "https://example.com/your-image.jpg",
+        credit: "Photo credit / source / permission note"
+      }
+    });
+    */
+
+    // ---------------- Map setup ----------------
+    const map = L.map("map", { zoomControl: true })
+      .setView([40.8448, -73.8648], 12); // Bronx center-ish
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const markerLayer = L.layerGroup().addTo(map);
+    const markerById = new Map();
+
+    function normalize(s){ return String(s ?? "").toLowerCase().trim(); }
+
+    function escapeHtml(str){
+      return String(str ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+    function escapeAttr(str){ return escapeHtml(str); }
+
+    function popupHtml(e){
+      const tagChips = (e.tags || []).map(t => `<span class="chip">${escapeHtml(t)}</span>`).join("");
+      const song = e.songLink
+        ? `<div class="links"><b>Song link:</b> <a href="${escapeAttr(e.songLink)}" target="_blank" rel="noreferrer">${escapeHtml(e.songLink)}</a></div>`
+        : "";
+
+      let mediaHtml = "";
+      if (e.artifact && e.artifact.type === "image" && e.artifact.url) {
+        mediaHtml = `
+          <div class="media">
+            <img src="${escapeAttr(e.artifact.url)}" alt="artifact image"/>
+            ${e.artifact.credit ? `<div class="small">${escapeHtml(e.artifact.credit)}</div>` : ""}
+          </div>`;
+      } else if (e.artifact && e.artifact.type === "video" && e.artifact.url) {
+        mediaHtml = `
+          <div class="media">
+            <iframe src="${escapeAttr(e.artifact.url)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            ${e.artifact.credit ? `<div class="small">${escapeHtml(e.artifact.credit)}</div>` : ""}
+          </div>`;
+      }
+
+      return `
+        <div class="popup">
+          <h2>${escapeHtml(e.title)}</h2>
+          <div class="pmeta">
+            <span class="chip">${escapeHtml(e.neighborhood)}</span>
+            <span class="chip">${escapeHtml(e.decade)}</span>
+            ${tagChips}
+          </div>
+          <p>${escapeHtml(e.story)}</p>
+          ${song}
+          ${mediaHtml}
+        </div>
+      `;
+    }
+
+    function uniqueSorted(arr){
+      return Array.from(new Set(arr.filter(Boolean))).sort((a,b) => a.localeCompare(b));
+    }
+
+    function populateSelect(selectId, values){
+      const sel = document.getElementById(selectId);
+      const current = sel.value;
+      const options = [`<option value="all">All</option>`]
+        .concat(values.map(v => `<option value="${escapeAttr(v)}">${escapeHtml(v)}</option>`));
+      sel.innerHTML = options.join("");
+      if ([...sel.options].some(o => o.value === current)) sel.value = current;
+    }
+
+    function renderMarkers(list){
+      markerLayer.clearLayers();
+      markerById.clear();
+
+      list.forEach(e => {
+        const m = L.circleMarker([e.lat, e.lng], {
+          radius: 7,
+          weight: 2,
+          color: "#b8a7ff",
+          fillColor: "#7fe7d3",
+          fillOpacity: 0.65
+        }).addTo(markerLayer);
+
+        m.bindPopup(popupHtml(e), { maxWidth: 340 });
+        markerById.set(e.id, m);
+      });
+    }
+
+    function renderCards(list){
+      const cards = document.getElementById("cards");
+      const count = document.getElementById("count");
+      count.textContent = `${list.length} entr${list.length === 1 ? "y" : "ies"}`;
+
+      if (list.length === 0) {
+        // keep the empty state
+        cards.innerHTML = `
+          <div class="empty-state">
+            No entries yet — this is intentionally blank.<br/><br/>
+            Add approved entries inside the <code>entries</code> array in the code.
+          </div>
+        `;
+        return;
+      }
+
+      cards.innerHTML = list.map(e => {
+        const chips = [
+          `<span class="chip">${escapeHtml(e.neighborhood)}</span>`,
+          `<span class="chip">${escapeHtml(e.decade)}</span>`,
+          ...(e.tags || []).slice(0,2).map(t => `<span class="chip">${escapeHtml(t)}</span>`)
+        ].join("");
+        const excerpt = (e.story || "").slice(0, 140) + ((e.story || "").length > 140 ? "…" : "");
+        return `
+          <article class="card" data-id="${escapeAttr(e.id)}">
+            <h3>${escapeHtml(e.title)}</h3>
+            <div class="meta">${chips}</div>
+            <p class="excerpt">${escapeHtml(excerpt)}</p>
+          </article>
+        `;
+      }).join("");
+
+      // click -> open popup + zoom
+      cards.querySelectorAll(".card").forEach(card => {
+        card.addEventListener("click", () => {
+          const id = card.getAttribute("data-id");
+          const m = markerById.get(id);
+          if (!m) return;
+          map.setView(m.getLatLng(), 14, { animate: true });
+          m.openPopup();
+        });
+      });
+    }
+
+    function applyFilters(){
+      const q = normalize(document.getElementById("q").value);
+      const decade = document.getElementById("decade").value;
+      const hood = document.getElementById("hood").value;
+      const tag = document.getElementById("tag").value;
+
+      const filtered = entries.filter(e => {
+        if (decade !== "all" && e.decade !== decade) return false;
+        if (hood !== "all" && e.neighborhood !== hood) return false;
+        if (tag !== "all" && !(e.tags || []).includes(tag)) return false;
+
+        if (!q) return true;
+        const hay = [
+          e.title, e.neighborhood, e.decade,
+          (e.tags || []).join(" "),
+          e.story
+        ].join(" ");
+        return normalize(hay).includes(q);
+      });
+
+      renderMarkers(filtered);
+      renderCards(filtered);
+    }
+
+    function init(){
+      // Build dropdowns even if empty (just "All")
+      populateSelect("decade", uniqueSorted(entries.map(e => e.decade)));
+      populateSelect("hood", uniqueSorted(entries.map(e => e.neighborhood)));
+      populateSelect("tag", uniqueSorted(entries.flatMap(e => e.tags || [])));
+
+      // initial render
+      renderMarkers(entries);
+      renderCards(entries);
+
+      // listeners
+      ["q","decade","hood","tag"].forEach(id => {
+        document.getElementById(id).addEventListener("input", applyFilters);
+        document.getElementById(id).addEventListener("change", applyFilters);
+      });
+
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        document.getElementById("q").value = "";
+        document.getElementById("decade").value = "all";
+        document.getElementById("hood").value = "all";
+        document.getElementById("tag").value = "all";
+        applyFilters();
+        map.setView([40.8448, -73.8648], 12);
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
