@@ -518,8 +518,8 @@ As a middle schooler, this library was a refuge for me and also a place to chat 
         m.bindPopup(popupHtml(e), {
           maxWidth: 340,
           autoPan: true,
-          autoPanPaddingTopLeft: isMobile ? [12, 12] : [460, 24],
-          autoPanPaddingBottomRight: [24, 24]
+          autoPanPaddingTopLeft: isMobile ? [12, 70] : [460, 24],
+          autoPanPaddingBottomRight: isMobile ? [12, 20] : [24, 24]
         });
 
         markerById.set(e.id, m);
