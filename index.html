@@ -463,18 +463,20 @@ song:{
       const tagChips = (e.tags || []).map(t => `<span class="chip">${escapeHtml(t)}</span>`).join("");
       let song = "";
 
-if (e.song && e.song.type === "spotify") {
+if (e.song && e.song.type === "spotify" && e.song.id) {
   song = `
     <div class="media">
       <div class="archive-label">MEMORY SOUNDTRACK</div>
-
       <iframe
-        src="https://open.spotify.com/embed/track/${e.song.id}"
+        src="https://open.spotify.com/embed/track/${escapeAttr(e.song.id)}"
         width="100%"
-        height="80"
+        height="152"
         frameborder="0"
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture">
       </iframe>
+      <div class="small">
+        If the player doesn’t load, <a href="https://open.spotify.com/track/${escapeAttr(e.song.id)}" target="_blank" rel="noreferrer">open in Spotify</a>.
+      </div>
     </div>
   `;
 }
