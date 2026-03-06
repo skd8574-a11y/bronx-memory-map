@@ -1,9 +1,9 @@
-<<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Against the Caption — Bronx Memory Map (Prototype)</title>
+  <title>Against the Caption — Bronx Memory Map</title>
 
   <!-- Leaflet -->
   <link
@@ -38,22 +38,7 @@
       color:var(--text);
     }
 
-    /* ✅ Keep popup inside the viewport + allow scrolling */
-.leaflet-popup-content{
-  max-height: min(520px, calc(100vh - 140px)) !important;
-  overflow-y: auto !important;
-  overscroll-behavior: contain;
-  padding-right: 6px; /* gives room for scrollbar */
-}
-
-/* Optional: make scrollbar subtle (Chrome/Safari) */
-.leaflet-popup-content::-webkit-scrollbar{ width: 8px; }
-.leaflet-popup-content::-webkit-scrollbar-thumb{
-  background: rgba(127,231,211,0.22);
-  border-radius: 10px;
-}
-
-    /* ====== Layout ====== */
+    /* ===== Layout ===== */
     .app{
       display:grid;
       grid-template-columns: 420px 1fr;
@@ -67,7 +52,6 @@
       overflow:auto;
       -webkit-overflow-scrolling: touch;
     }
-
     .title{
       font-size:20px;
       font-weight:700;
@@ -105,11 +89,6 @@
       background:linear-gradient(135deg, rgba(184,167,255,.2), rgba(127,231,211,.15));
       border-color:#3b4f78;
     }
-    .btn:hover{border-color:#324567}
-    .btn.primary{
-      background:linear-gradient(135deg, rgba(184,167,255,.2), rgba(127,231,211,.15));
-      border-color:#3b4f78;
-    }
 
     .filters{
       display:grid;
@@ -117,15 +96,8 @@
       gap:10px;
       margin-bottom:14px;
     }
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    label{
-      font-size:12px;
-      color:var(--muted);
-    }
+    .field{display:flex; flex-direction:column; gap:6px;}
+    label{font-size:12px; color:var(--muted);}
     input, select{
       width:100%;
       padding:10px 10px;
@@ -152,39 +124,20 @@
       font-size:13px;
       line-height:1.4;
     }
-    .empty-state code{
-      color:#cfe0ff;
-      font-size:12px;
-    }
+    .empty-state code{color:#cfe0ff; font-size:12px;}
 
-    /* ====== Map area ====== */
-    .map-wrap{
-      position:relative;
-      height:100%;
-      min-height:0;
-    }
-    #map{
-      height:100%;
-      width:100%;
-      filter: brightness(.9) saturate(.9);
-    }
+    /* ===== Map ===== */
+    .map-wrap{position:relative; height:100%; min-height:0;}
+    #map{height:100%; width:100%; filter: brightness(.95) saturate(.95);}
     .map-wrap::after{
       content:"";
       position:absolute;
       inset:0;
       pointer-events:none;
-      background: radial-gradient(
-        circle at center,
+      background: radial-gradient(circle at center,
         rgba(0,0,0,0) 45%,
-        rgba(0,0,0,.35) 100%
+        rgba(0,0,0,.30) 100%
       );
-    }
-
-    .small{
-      font-size:11px;
-      color:#91a4c9;
-      margin-top:6px;
-      line-height:1.35;
     }
 
     /* ===== Cards ===== */
@@ -202,13 +155,8 @@
       border-color:#3b4f78;
       background:rgba(14,26,46,.75);
     }
-    .card h3{
-      margin:0 0 8px 0;
-      font-size:16px;
-      line-height:1.2;
-      letter-spacing:.2px;
-    }
-    .meta{ display:flex; flex-wrap:wrap; gap:8px; }
+    .card h3{margin:0 0 8px 0; font-size:16px; line-height:1.2; letter-spacing:.2px;}
+    .meta{display:flex; flex-wrap:wrap; gap:8px;}
     .chip{
       font-size:12px;
       padding:4px 8px;
@@ -231,9 +179,20 @@
       box-shadow: none !important;
       border: 1px solid rgba(184,167,255,0.25) !important;
     }
+
+    /* Keep popup inside viewport + scroll */
     .leaflet-popup-content{
       margin: 14px 16px 16px 16px !important;
       width: 320px !important;
+      max-height: min(520px, calc(100vh - 140px)) !important;
+      overflow-y: auto !important;
+      overscroll-behavior: contain;
+      padding-right: 6px;
+    }
+    .leaflet-popup-content::-webkit-scrollbar{ width: 8px; }
+    .leaflet-popup-content::-webkit-scrollbar-thumb{
+      background: rgba(127,231,211,0.22);
+      border-radius: 10px;
     }
 
     .archive-label{
@@ -265,10 +224,11 @@
       margin:0 0 10px 0;
       white-space: pre-wrap;
     }
-    .links a{
-      color:var(--accent2);
-      word-break:break-word;
-      font-size:12.5px;
+    .small{
+      font-size:11px;
+      color:#91a4c9;
+      margin-top:6px;
+      line-height:1.35;
     }
 
     .media{
@@ -283,37 +243,35 @@
       box-shadow: 0 10px 28px rgba(0,0,0,0.35);
       display:block;
     }
-    .media iframe{
-      width:100%;
-      aspect-ratio: 16/9;
-      border:0;
-      border-radius:12px;
-      border:1px solid #2a3b5c;
+
+    .soundtrack{
+      margin-top:12px;
+      padding-top:10px;
+      border-top:1px solid rgba(34,48,74,0.7);
     }
-    .popup .small{
-      color: rgba(169,182,211,0.95);
-      font-size: 11px;
-      margin-top: 8px;
+    .soundtrack .label{
+      font-size:10px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color: rgba(127,231,211,0.85);
+      margin-bottom:8px;
     }
 
-    /* ===== Mobile ===== */
+    /* Buttons inside popup */
+    .leaflet-popup-content .btn{
+      padding:9px 11px;
+      border-radius:10px;
+      font-size:12.5px;
+    }
+
     @media (max-width: 980px){
       .app{
         grid-template-columns: 1fr;
         grid-template-rows: 44dvh 1fr;
         height:100dvh;
       }
-      .sidebar{
-        height:auto;
-        overflow:auto;
-      }
-      .map-wrap{
-        height:auto;
-        min-height:56dvh;
-      }
-      #map{
-        min-height:56dvh;
-      }
+      .map-wrap{height:auto; min-height:56dvh;}
+      #map{min-height:56dvh;}
     }
   </style>
 </head>
@@ -327,9 +285,7 @@
       </p>
 
       <div class="top-actions">
-        <a class="btn primary" id="submitLink" href="https://tally.so/r/81dD5O" target="_blank" rel="noreferrer">
-          Submit a memory
-        </a>
+        <a class="btn primary" id="submitLink" href="#" target="_blank" rel="noreferrer">Submit a memory</a>
         <button class="btn" id="resetBtn" type="button">Reset</button>
       </div>
 
@@ -340,21 +296,15 @@
         </div>
         <div class="field">
           <label for="decade">Decade</label>
-          <select id="decade">
-            <option value="all">All</option>
-          </select>
+          <select id="decade"><option value="all">All</option></select>
         </div>
         <div class="field">
           <label for="hood">Neighborhood</label>
-          <select id="hood">
-            <option value="all">All</option>
-          </select>
+          <select id="hood"><option value="all">All</option></select>
         </div>
         <div class="field">
           <label for="tag">Tag</label>
-          <select id="tag">
-            <option value="all">All</option>
-          </select>
+          <select id="tag"><option value="all">All</option></select>
         </div>
       </div>
 
@@ -377,55 +327,51 @@
     const submitUrl = "https://tally.so/r/81dD5O";
     document.getElementById("submitLink").href = submitUrl;
 
-  const entries = [
-
-{
-  id: "BX-0001",
-  title: "Looking out from the Bronx",
-  neighborhood: "Soundview",
-  decade: "2020s",
-  tags: ["growing-up-in-the-bronx","the-block","migration-stories"],
-  lat: 40.8200,
-  lng: -73.8800,
-  story: `I took this photo looking out across the Bronx skyline. It’s the kind of view you see when you’re moving through the city, from a train, a bridge, somewhere in between places.
+    const entries = [
+      {
+        id: "BX-0001",
+        title: "Looking out from the Bronx",
+        neighborhood: "Soundview",
+        decade: "2020s",
+        tags: ["growing-up-in-the-bronx","the-block","migration-stories"],
+        lat: 40.8200,
+        lng: -73.8800,
+        story: `I took this photo looking out across the Bronx skyline. It’s the kind of view you see when you’re moving through the city, from a train, a bridge, somewhere in between places.
 
 I’ve spent a lot of time thinking about leaving the Bronx, coming back to it, and trying to understand what it means to carry a place with you even when you’re somewhere else.
 
 So much of what gets written about the Bronx comes from outside of it. This archive is trying to hold something different. It's about the small memories people carry with them. The places that stay with you even when you leave.
 
 This photo feels like that moment: looking out, looking back, trying to see the Bronx again.`,
-  artifact:{
-    type:"image",
-    url:"assets/images/bronx-skyline.jpg",
-    credit:"Contributor submission (anonymous)"
-  }
-},
-
-{
-  id: "BX-0002",
-  title: "Francis Martin Library after school",
-  neighborhood: "Morris Heights",
-  decade: "2000s",
-  tags: ["growing-up-in-the-bronx","organizing-activism","migration-stories"],
-  lat: 40.8505,
-  lng: -73.9135,
-  story: `On 181st and University, there is a library called the Francis Martin Library. This library is where I would go after school when I went to middle school around Andrew’s Ave.
+        artifact:{
+          type:"image",
+          url:"assets/images/bronx-skyline.jpg",
+          credit:"Contributor submission (anonymous)"
+        }
+      },
+      {
+        id: "BX-0002",
+        title: "Francis Martin Library after school",
+        neighborhood: "Morris Heights",
+        decade: "2000s",
+        tags: ["growing-up-in-the-bronx","organizing-activism","migration-stories"],
+        lat: 40.8505,
+        lng: -73.9135,
+        story: `On 181st and University, there is a library called the Francis Martin Library. This library is where I would go after school when I went to middle school around Andrew’s Ave.
 
 I would go here to read manga and books like The Coldest Winter Ever by Sistah Souljah and Fly Girl by Omar Tyree.
 
 As a middle schooler, this library was a refuge for me and also a place to chat with people online since I didn’t have WiFi at home.`,
-song: {
-  type: "spotify",
-  url: "https://open.spotify.com/track/5k3VjTwIsOjQ2woGz3Yx71"
-}
-}
-
-];
+        soundtrack:{
+          label:"Can’t Help But Wait — Trey Songz",
+          spotifyUrl:"https://open.spotify.com/track/5k3VjTwIsOjQ2woGz3Yx71"
+        }
+      }
+    ];
 
     // ---------------- Map setup ----------------
     const map = L.map("map", { zoomControl: true });
 
-    // Bronx bounds (keeps panning focused)
     const bronxBounds = L.latLngBounds(
       [40.785, -73.933],
       [40.915, -73.765]
@@ -433,21 +379,15 @@ song: {
     map.setMaxBounds(bronxBounds);
     map.options.maxBoundsViscosity = 0.9;
 
+    // tiles
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // Optional subtle dark overlay (you can remove if too dark)
-    L.rectangle(
-      [[40.6,-74.2],[41.0,-73.6]],
-      {
-        color: "transparent",
-        fillColor: "#000",
-        fillOpacity: 0.18,
-        interactive:false
-      }
-    ).addTo(map);
+    // initial view
+    const isMobile0 = window.matchMedia("(max-width: 980px)").matches;
+    map.fitBounds(bronxBounds, { padding: isMobile0 ? [18,18] : [24,24], maxZoom: isMobile0 ? 12 : 13 });
 
     const markerLayer = L.layerGroup().addTo(map);
     const markerById = new Map();
@@ -466,25 +406,6 @@ song: {
 
     function popupHtml(e){
       const tagChips = (e.tags || []).map(t => `<span class="chip">${escapeHtml(t)}</span>`).join("");
-      let song = "";
-
-if (e.song && e.song.type === "spotify" && e.song.id) {
-  song = `
-    <div class="media">
-      <div class="archive-label">MEMORY SOUNDTRACK</div>
-      <iframe
-        src="https://open.spotify.com/embed/track/${escapeAttr(e.song.id)}"
-        width="100%"
-        height="152"
-        frameborder="0"
-        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture">
-      </iframe>
-      <div class="small">
-        If the player doesn’t load, <a href="https://open.spotify.com/track/${escapeAttr(e.song.id)}" target="_blank" rel="noreferrer">open in Spotify</a>.
-      </div>
-    </div>
-  `;
-}
 
       let mediaHtml = "";
       if (e.artifact && e.artifact.type === "image" && e.artifact.url) {
@@ -493,12 +414,21 @@ if (e.song && e.song.type === "spotify" && e.song.id) {
             <img src="${escapeAttr(e.artifact.url)}" alt="artifact image"/>
             ${e.artifact.credit ? `<div class="small">${escapeHtml(e.artifact.credit)}</div>` : ""}
           </div>`;
-      } else if (e.artifact && e.artifact.type === "video" && e.artifact.url) {
-        mediaHtml = `
-          <div class="media">
-            <iframe src="${escapeAttr(e.artifact.url)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            ${e.artifact.credit ? `<div class="small">${escapeHtml(e.artifact.credit)}</div>` : ""}
-          </div>`;
+      }
+
+      let soundtrackHtml = "";
+      if (e.soundtrack && e.soundtrack.spotifyUrl) {
+        soundtrackHtml = `
+          <div class="soundtrack">
+            <div class="label">Memory soundtrack</div>
+            ${e.soundtrack.label ? `<div class="small">${escapeHtml(e.soundtrack.label)}</div>` : ""}
+            <div style="margin-top:10px;">
+              <a class="btn primary" href="${escapeAttr(e.soundtrack.spotifyUrl)}" target="_blank" rel="noreferrer">
+                Open in Spotify
+              </a>
+            </div>
+          </div>
+        `;
       }
 
       return `
@@ -514,8 +444,8 @@ if (e.song && e.song.type === "spotify" && e.song.id) {
 
           <p>${escapeHtml(e.story)}</p>
 
-          ${songHtml}
           ${mediaHtml}
+          ${soundtrackHtml}
         </div>
       `;
     }
@@ -547,7 +477,6 @@ if (e.song && e.song.type === "spotify" && e.song.id) {
         }).addTo(markerLayer);
 
         const isMobile = window.matchMedia("(max-width: 980px)").matches;
-
         m.bindPopup(popupHtml(e), {
           maxWidth: 340,
           autoPan: true,
@@ -594,23 +523,21 @@ if (e.song && e.song.type === "spotify" && e.song.id) {
           const id = card.getAttribute("data-id");
           const m = markerById.get(id);
           if (!m) return;
+
           const isMobile = window.matchMedia("(max-width: 980px)").matches;
-const zoom = isMobile ? 13 : 14;
+          const zoom = isMobile ? 13 : 14;
 
-map.flyTo(m.getLatLng(), zoom, { animate: true, duration: 0.6 });
+          map.flyTo(m.getLatLng(), zoom, { animate: true, duration: 0.6 });
 
-// ✅ wait for the fly animation to finish, THEN open popup
-map.once("moveend", () => {
-  m.openPopup();
-
-  // ✅ nudge so popup is fully visible (sidebar + top)
-  setTimeout(() => {
-    map.panInside(m.getLatLng(), {
-      paddingTopLeft: isMobile ? [12, 80] : [460, 120],
-      paddingBottomRight: [24, 24]
-    });
-  }, 50);
-});
+          map.once("moveend", () => {
+            m.openPopup();
+            setTimeout(() => {
+              map.panInside(m.getLatLng(), {
+                paddingTopLeft: isMobile ? [12, 80] : [460, 120],
+                paddingBottomRight: [24, 24]
+              });
+            }, 50);
+          });
         });
       });
     }
@@ -647,7 +574,7 @@ map.once("moveend", () => {
       renderMarkers(entries);
       renderCards(entries);
 
-      // ✅ Focus the first entry so popup is visible immediately
+      // focus first entry
       if (entries.length > 0) {
         const first = entries[0];
         const isMobile = window.matchMedia("(max-width: 980px)").matches;
@@ -665,13 +592,6 @@ map.once("moveend", () => {
             });
           }, 50);
         }
-      } else {
-        // If empty, show Bronx overview
-        const isMobile = window.matchMedia("(max-width: 980px)").matches;
-        map.fitBounds(bronxBounds, {
-          padding: isMobile ? [18,18] : [24,24],
-          maxZoom: isMobile ? 12 : 13
-        });
       }
 
       ["q","decade","hood","tag"].forEach(id => {
@@ -686,12 +606,8 @@ map.once("moveend", () => {
         document.getElementById("tag").value = "all";
         applyFilters();
 
-        // Reset to Bronx overview
         const isMobile = window.matchMedia("(max-width: 980px)").matches;
-        map.fitBounds(bronxBounds, {
-          padding: isMobile ? [18,18] : [24,24],
-          maxZoom: isMobile ? 12 : 13
-        });
+        map.fitBounds(bronxBounds, { padding: isMobile ? [18,18] : [24,24], maxZoom: isMobile ? 12 : 13 });
       });
     }
 
