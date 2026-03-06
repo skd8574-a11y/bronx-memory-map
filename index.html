@@ -105,6 +105,11 @@
       background:linear-gradient(135deg, rgba(184,167,255,.2), rgba(127,231,211,.15));
       border-color:#3b4f78;
     }
+    .btn:hover{border-color:#324567}
+    .btn.primary{
+      background:linear-gradient(135deg, rgba(184,167,255,.2), rgba(127,231,211,.15));
+      border-color:#3b4f78;
+    }
 
     .filters{
       display:grid;
@@ -413,6 +418,7 @@ song: {
   type: "spotify",
   url: "https://open.spotify.com/track/5k3VjTwIsOjQ2woGz3Yx71"
 }
+}
 
 ];
 
@@ -460,41 +466,21 @@ song: {
 
     function popupHtml(e){
       const tagChips = (e.tags || []).map(t => `<span class="chip">${escapeHtml(t)}</span>`).join("");
-    let songHtml = "";
+      let song = "";
 
-if (e.song && e.song.type === "spotify" && e.song.url) {
-  // Extract Spotify track ID from the URL
-  const match = String(e.song.url).match(/spotify\.com\/track\/([a-zA-Z0-9]+)/);
-  const trackId = match ? match[1] : null;
-
-  const openUrl = escapeAttr(e.song.url);
-
-  // If we got an ID, try the embed. If not, skip embed and just show button.
-  const embed = trackId
-    ? `
+if (e.song && e.song.type === "spotify" && e.song.id) {
+  song = `
+    <div class="media">
+      <div class="archive-label">MEMORY SOUNDTRACK</div>
       <iframe
-        src="https://open.spotify.com/embed/track/${escapeAttr(trackId)}"
+        src="https://open.spotify.com/embed/track/${escapeAttr(e.song.id)}"
         width="100%"
         height="152"
         frameborder="0"
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture">
       </iframe>
-    `
-    : "";
-
-  songHtml = `
-    <div class="media">
-      <div class="archive-label">MEMORY SOUNDTRACK</div>
-
-      ${embed}
-
-      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
-        <a class="btn primary" href="${openUrl}" target="_blank" rel="noreferrer">Play on Spotify</a>
-        <button class="btn" type="button" onclick="navigator.clipboard.writeText('${openUrl}')">Copy link</button>
-      </div>
-
       <div class="small">
-        If the player doesn’t load, the button still works.
+        If the player doesn’t load, <a href="https://open.spotify.com/track/${escapeAttr(e.song.id)}" target="_blank" rel="noreferrer">open in Spotify</a>.
       </div>
     </div>
   `;
@@ -528,7 +514,7 @@ if (e.song && e.song.type === "spotify" && e.song.url) {
 
           <p>${escapeHtml(e.story)}</p>
 
-          ${song}
+          ${songHtml}
           ${mediaHtml}
         </div>
       `;
