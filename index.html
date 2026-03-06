@@ -410,7 +410,10 @@ I would go here to read manga and books like The Coldest Winter Ever by Sistah S
 
 As a middle schooler, this library was a refuge for me and also a place to chat with people online since I didn’t have WiFi at home.`,
 
-  songLink: "https://www.youtube.com/results?search_query=Can't+Help+But+Wait+Trey+Songz"
+  song:{
+  type:"youtube",
+  id:"Jx2yQejrrUE"
+}
 }
 
 ];
@@ -459,9 +462,21 @@ As a middle schooler, this library was a refuge for me and also a place to chat 
 
     function popupHtml(e){
       const tagChips = (e.tags || []).map(t => `<span class="chip">${escapeHtml(t)}</span>`).join("");
-      const song = e.songLink
-        ? `<div class="links"><b>Song link:</b> <a href="${escapeAttr(e.songLink)}" target="_blank" rel="noreferrer">${escapeHtml(e.songLink)}</a></div>`
-        : "";
+      let song = "";
+
+if (e.song && e.song.type === "youtube") {
+  song = `
+    <div class="media">
+      <div class="archive-label">MEMORY SOUNDTRACK</div>
+      <iframe
+        src="https://www.youtube.com/embed/${e.song.id}"
+        title="Memory soundtrack"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
+  `;
+}
 
       let mediaHtml = "";
       if (e.artifact && e.artifact.type === "image" && e.artifact.url) {
