@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Against the Caption — Bronx Memory Map</title>
 
+  <!-- Leaflet -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -18,6 +19,9 @@
   ></script>
 
   <style>
+    /* =========================
+       1) THEME
+    ========================== */
     :root{
       --bg:#0b0f17;
       --panel:#0f1624;
@@ -34,11 +38,14 @@
 
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       background:var(--bg);
       color:var(--text);
     }
 
+    /* =========================
+       2) LAYOUT
+    ========================== */
     .app{
       display:grid;
       grid-template-columns: 420px 1fr;
@@ -54,10 +61,38 @@
       -webkit-overflow-scrolling: touch;
     }
 
+    .map-wrap{
+      position:relative;
+      height:100%;
+      min-height:0;
+    }
+
+    #map{
+      height:100%;
+      width:100%;
+      filter: brightness(.96) saturate(.95);
+    }
+
+    .map-wrap::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background: radial-gradient(
+        circle at center,
+        rgba(0,0,0,0) 48%,
+        rgba(0,0,0,.24) 100%
+      );
+    }
+
+    /* =========================
+       3) SIDEBAR / TEXT
+    ========================== */
     .title{
       font-size:20px;
       font-weight:700;
       margin:0 0 6px 0;
+      line-height:1.15;
     }
 
     .subtitle{
@@ -154,48 +189,27 @@
       font-size:12px;
     }
 
-    .map-wrap{
-      position:relative;
-      height:100%;
-      min-height:0;
-    }
-
-    #map{
-      height:100%;
-      width:100%;
-      filter: brightness(.95) saturate(.95);
-    }
-
-    .map-wrap::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      background: radial-gradient(
-        circle at center,
-        rgba(0,0,0,0) 45%,
-        rgba(0,0,0,.30) 100%
-      );
-    }
-
+    /* =========================
+       4) SIDEBAR CARDS
+    ========================== */
     .card{
       border:1px solid rgba(34,48,74,0.9);
-      border-left:3px solid #7fe7d3;
+      border-left:4px solid #7fe7d3;
       background:rgba(12,20,36,.55);
       border-radius:14px;
-      padding:12px 12px;
+      padding:14px 14px;
       cursor:pointer;
-      transition:transform .12s ease, border-color .12s ease;
+      transition:transform .12s ease, border-color .12s ease, background .12s ease;
     }
 
     .card:hover{
-      transform:translateY(-1px);
+      transform: translateY(-1px);
       border-color:#3b4f78;
       background:rgba(14,26,46,.75);
     }
 
     .card h3{
-      margin:0 0 8px 0;
+      margin:0 0 10px 0;
       font-size:16px;
       line-height:1.2;
       letter-spacing:.2px;
@@ -216,8 +230,11 @@
       color:#cfe0ff;
     }
 
+    /* =========================
+       5) POPUP
+    ========================== */
     .leaflet-popup-content-wrapper{
-      background: rgba(9, 13, 22, 0.96) !important;
+      background: rgba(9, 13, 22, 0.97) !important;
       color: #f2f6ff !important;
       border: 1px solid rgba(184,167,255,0.28) !important;
       box-shadow: 0 18px 60px rgba(0,0,0,0.55) !important;
@@ -225,25 +242,31 @@
     }
 
     .leaflet-popup-tip{
-      background: rgba(9, 13, 22, 0.96) !important;
+      background: rgba(9, 13, 22, 0.97) !important;
       box-shadow: none !important;
       border: 1px solid rgba(184,167,255,0.25) !important;
     }
 
     .leaflet-popup-content{
-      margin:14px 16px 16px 16px !important;
-      width:320px !important;
-      max-height:min(520px, calc(100vh - 140px)) !important;
-      overflow-y:auto !important;
-      overscroll-behavior:contain;
-      padding-right:6px;
+      margin: 14px 16px 16px 16px !important;
+      width: 320px !important;
+      max-height: min(520px, calc(100vh - 140px)) !important;
+      overflow-y: auto !important;
+      overscroll-behavior: contain;
+      padding-right: 6px;
     }
 
-    .leaflet-popup-content::-webkit-scrollbar{ width:8px; }
+    .leaflet-popup-content::-webkit-scrollbar{ width: 8px; }
 
     .leaflet-popup-content::-webkit-scrollbar-thumb{
-      background:rgba(127,231,211,0.22);
+      background: rgba(127,231,211,0.22);
+      border-radius: 10px;
+    }
+
+    .leaflet-popup-content .btn{
+      padding:9px 11px;
       border-radius:10px;
+      font-size:12.5px;
     }
 
     .archive-label{
@@ -258,9 +281,10 @@
     .popup h2{
       font-size:18px;
       margin:6px 0 8px 0;
-      color:#ffffff;
-      letter-spacing:0.2px;
+      color:#fff;
+      letter-spacing:.2px;
       font-weight:600;
+      line-height:1.2;
     }
 
     .popup .pmeta{
@@ -273,10 +297,10 @@
     .popup p{
       color:#e8efff !important;
       font-size:14px;
-      line-height:1.65;
+      line-height:1.62;
       letter-spacing:.2px;
       margin:0 0 10px 0;
-      white-space:pre-wrap;
+      white-space: pre-wrap;
     }
 
     .small{
@@ -296,8 +320,14 @@
       width:100%;
       border-radius:14px;
       border:1px solid rgba(255,255,255,0.10);
-      box-shadow:0 10px 28px rgba(0,0,0,0.35);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.35);
       display:block;
+    }
+
+    .popup .small{
+      color: rgba(169,182,211,0.95);
+      font-size:11px;
+      margin-top:8px;
     }
 
     .soundtrack{
@@ -314,46 +344,39 @@
       margin-bottom:8px;
     }
 
-    .leaflet-popup-content .btn{
-      padding:9px 11px;
-      border-radius:10px;
-      font-size:12.5px;
-    }
-
+    /* =========================
+       6) MOBILE
+    ========================== */
     @media (max-width: 980px){
       .app{
-        display:flex;
-        flex-direction:column-reverse;
-        height:auto;
-        min-height:100dvh;
-      }
-
-      .map-wrap{
-        order:1;
-        height:58dvh;
-        min-height:58dvh;
-      }
-
-      #map{
-        height:58dvh;
-        min-height:58dvh;
+        grid-template-columns: 1fr;
+        grid-template-rows: 36dvh 64dvh;
+        height:100dvh;
       }
 
       .sidebar{
-        order:2;
         height:auto;
-        overflow:visible;
-        padding:14px 12px 20px 12px;
-        border-right:none;
+        overflow:auto;
+        padding:14px 12px;
+      }
+
+      .map-wrap{
+        height:64dvh;
+        min-height:64dvh;
+      }
+
+      #map{
+        height:64dvh;
+        min-height:64dvh;
       }
 
       .filters{
-        grid-template-columns:1fr;
+        grid-template-columns: 1fr;
       }
 
       .leaflet-popup-content{
-        width:min(84vw, 290px) !important;
-        max-height:40dvh !important;
+        width:min(78vw, 270px) !important;
+        max-height:36dvh !important;
       }
 
       .popup h2{
@@ -369,16 +392,15 @@
         max-height:160px;
         object-fit:cover;
       }
-
-      .top-actions{
-        margin:10px 0 14px 0;
-      }
     }
   </style>
 </head>
 
 <body>
   <div class="app">
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
     <aside class="sidebar">
       <h1 class="title">Against the Caption — Bronx Memory Map</h1>
       <p class="subtitle">
@@ -386,7 +408,9 @@
       </p>
 
       <div class="top-actions">
-        <a class="btn primary" id="submitLink" href="#" target="_blank" rel="noreferrer">Submit a memory</a>
+        <a class="btn primary" id="submitLink" href="#" target="_blank" rel="noreferrer">
+          Submit a memory
+        </a>
         <button class="btn" id="resetBtn" type="button">Reset</button>
       </div>
 
@@ -395,17 +419,26 @@
           <label for="q">Search</label>
           <input id="q" placeholder="title, neighborhood, tags, text…" />
         </div>
+
         <div class="field">
           <label for="decade">Decade</label>
-          <select id="decade"><option value="all">All</option></select>
+          <select id="decade">
+            <option value="all">All</option>
+          </select>
         </div>
+
         <div class="field">
           <label for="hood">Neighborhood</label>
-          <select id="hood"><option value="all">All</option></select>
+          <select id="hood">
+            <option value="all">All</option>
+          </select>
         </div>
+
         <div class="field">
           <label for="tag">Tag</label>
-          <select id="tag"><option value="all">All</option></select>
+          <select id="tag">
+            <option value="all">All</option>
+          </select>
         </div>
       </div>
 
@@ -419,15 +452,25 @@
       </section>
     </aside>
 
+    <!-- =========================
+         MAP
+    ========================== -->
     <main class="map-wrap">
       <div id="map"></div>
     </main>
   </div>
 
   <script>
+    /* =========================
+       1) SETTINGS
+    ========================== */
     const submitUrl = "https://tally.so/r/81dD5O";
     document.getElementById("submitLink").href = submitUrl;
 
+    /* =========================
+       2) ENTRIES
+       Edit this section when adding memories
+    ========================== */
     const entries = [
       {
         id: "BX-0001",
@@ -441,13 +484,17 @@
 
 I’ve spent a lot of time thinking about leaving the Bronx, coming back to it, and trying to understand what it means to carry a place with you even when you’re somewhere else.
 
+So much of what gets written about the Bronx comes from outside of it. This archive is trying to hold something different. It's about the small memories people carry with them. The places that stay with you even when you leave.
+
 This photo feels like that moment: looking out, looking back, trying to see the Bronx again.`,
         artifact:{
           type:"image",
           url:"assets/images/bronx-skyline.jpg",
           credit:"Contributor submission (anonymous)"
-        }
+        },
+        contributorCredit:"Contributor submission (anonymous)"
       },
+
       {
         id: "BX-0002",
         title: "Francis Martin Library after school",
@@ -461,6 +508,7 @@ This photo feels like that moment: looking out, looking back, trying to see the 
 I would go here to read manga and books like The Coldest Winter Ever by Sistah Souljah and Fly Girl by Omar Tyree.
 
 As a middle schooler, this library was a refuge for me and also a place to chat with people online since I didn’t have WiFi at home.`,
+        contributorCredit:"Contributor submission (anonymous)",
         soundtrack:{
           label:"Can’t Help But Wait — Trey Songz",
           spotifyUrl:"https://open.spotify.com/track/5k3VjTwIsOjQ2woGz3Yx71"
@@ -468,11 +516,15 @@ As a middle schooler, this library was a refuge for me and also a place to chat 
       }
     ];
 
+    /* =========================
+       3) MAP SETUP
+    ========================== */
     const map = L.map("map", { zoomControl: true });
 
+    // tighter Bronx-focused bounds so it doesn't feel too spread out
     const bronxBounds = L.latLngBounds(
-      [40.785, -73.933],
-      [40.915, -73.765]
+      [40.800, -73.933],
+      [40.915, -73.790]
     );
 
     map.setMaxBounds(bronxBounds);
@@ -483,15 +535,12 @@ As a middle schooler, this library was a refuge for me and also a place to chat 
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    const initialMobile = window.matchMedia("(max-width: 980px)").matches;
-    map.fitBounds(bronxBounds, {
-      padding: initialMobile ? [12,12] : [24,24],
-      maxZoom: initialMobile ? 11 : 13
-    });
-
     const markerLayer = L.layerGroup().addTo(map);
     const markerById = new Map();
 
+    /* =========================
+       4) HELPERS
+    ========================== */
     function normalize(s){
       return String(s ?? "").toLowerCase().trim();
     }
@@ -509,6 +558,27 @@ As a middle schooler, this library was a refuge for me and also a place to chat 
       return escapeHtml(str);
     }
 
+    function uniqueSorted(arr){
+      return Array.from(new Set(arr.filter(Boolean))).sort((a,b) => a.localeCompare(b));
+    }
+
+    function populateSelect(selectId, values){
+      const sel = document.getElementById(selectId);
+      const current = sel.value;
+
+      const options = [`<option value="all">All</option>`]
+        .concat(values.map(v => `<option value="${escapeAttr(v)}">${escapeHtml(v)}</option>`));
+
+      sel.innerHTML = options.join("");
+
+      if ([...sel.options].some(o => o.value === current)) {
+        sel.value = current;
+      }
+    }
+
+    /* =========================
+       5) POPUP HTML
+    ========================== */
     function popupHtml(e){
       const tagChips = (e.tags || []).map(t => `<span class="chip">${escapeHtml(t)}</span>`).join("");
 
@@ -552,23 +622,14 @@ As a middle schooler, this library was a refuge for me and also a place to chat 
 
           ${mediaHtml}
           ${soundtrackHtml}
+          ${e.contributorCredit ? `<div class="small">${escapeHtml(e.contributorCredit)}</div>` : ""}
         </div>
       `;
     }
 
-    function uniqueSorted(arr){
-      return Array.from(new Set(arr.filter(Boolean))).sort((a,b) => a.localeCompare(b));
-    }
-
-    function populateSelect(selectId, values){
-      const sel = document.getElementById(selectId);
-      const current = sel.value;
-      const options = [`<option value="all">All</option>`]
-        .concat(values.map(v => `<option value="${escapeAttr(v)}">${escapeHtml(v)}</option>`));
-      sel.innerHTML = options.join("");
-      if ([...sel.options].some(o => o.value === current)) sel.value = current;
-    }
-
+    /* =========================
+       6) RENDER MARKERS
+    ========================== */
     function renderMarkers(list){
       markerLayer.clearLayers();
       markerById.clear();
@@ -587,17 +648,21 @@ As a middle schooler, this library was a refuge for me and also a place to chat 
         m.bindPopup(popupHtml(e), {
           maxWidth: 340,
           autoPan: true,
-          autoPanPaddingTopLeft: isMobile ? [12, 40] : [460, 24],
-          autoPanPaddingBottomRight: isMobile ? [12, 16] : [24, 24]
+          autoPanPaddingTopLeft: isMobile ? [20, 100] : [460, 24],
+          autoPanPaddingBottomRight: isMobile ? [20, 30] : [24, 24]
         });
 
         markerById.set(e.id, m);
       });
     }
 
+    /* =========================
+       7) RENDER SIDEBAR CARDS
+    ========================== */
     function renderCards(list){
       const cards = document.getElementById("cards");
       const count = document.getElementById("count");
+
       count.textContent = `${list.length} entr${list.length === 1 ? "y" : "ies"}`;
 
       if (list.length === 0) {
@@ -632,23 +697,43 @@ As a middle schooler, this library was a refuge for me and also a place to chat 
           if (!m) return;
 
           const isMobile = window.matchMedia("(max-width: 980px)").matches;
-          const zoom = isMobile ? 12 : 14;
+          const zoom = isMobile ? 13 : 14;
 
-          map.flyTo(m.getLatLng(), zoom, { animate: true, duration: 0.6 });
+          if (isMobile) {
+            document.getElementById("map").scrollIntoView({
+              behavior: "smooth",
+              block: "start"
+            });
 
-          map.once("moveend", () => {
-            m.openPopup();
-            setTimeout(() => {
-              map.panInside(m.getLatLng(), {
-                paddingTopLeft: isMobile ? [12, 40] : [460, 120],
-                paddingBottomRight: isMobile ? [12, 16] : [24, 24]
-              });
-            }, 50);
-          });
+            const point = map.project(m.getLatLng(), zoom);
+            const shiftedPoint = point.subtract([0, 120]);
+            const shiftedLatLng = map.unproject(shiftedPoint, zoom);
+
+            map.flyTo(shiftedLatLng, zoom, { animate: true, duration: 0.6 });
+
+            map.once("moveend", () => {
+              m.openPopup();
+            });
+          } else {
+            map.flyTo(m.getLatLng(), zoom, { animate: true, duration: 0.6 });
+
+            map.once("moveend", () => {
+              m.openPopup();
+              setTimeout(() => {
+                map.panInside(m.getLatLng(), {
+                  paddingTopLeft: [460, 120],
+                  paddingBottomRight: [24, 24]
+                });
+              }, 50);
+            });
+          }
         });
       });
     }
 
+    /* =========================
+       8) FILTERING
+    ========================== */
     function applyFilters(){
       const q = normalize(document.getElementById("q").value);
       const decade = document.getElementById("decade").value;
@@ -661,6 +746,7 @@ As a middle schooler, this library was a refuge for me and also a place to chat 
         if (tag !== "all" && !(e.tags || []).includes(tag)) return false;
 
         if (!q) return true;
+
         const hay = [
           e.title,
           e.neighborhood,
@@ -676,6 +762,9 @@ As a middle schooler, this library was a refuge for me and also a place to chat 
       renderCards(filtered);
     }
 
+    /* =========================
+       9) INIT
+    ========================== */
     function init(){
       populateSelect("decade", uniqueSorted(entries.map(e => e.decade)));
       populateSelect("hood", uniqueSorted(entries.map(e => e.neighborhood)));
@@ -684,6 +773,7 @@ As a middle schooler, this library was a refuge for me and also a place to chat 
       renderMarkers(entries);
       renderCards(entries);
 
+      // do NOT auto-open any entry
       const isMobile = window.matchMedia("(max-width: 980px)").matches;
       map.fitBounds(bronxBounds, {
         padding: isMobile ? [12,12] : [24,24],
@@ -700,6 +790,7 @@ As a middle schooler, this library was a refuge for me and also a place to chat 
         document.getElementById("decade").value = "all";
         document.getElementById("hood").value = "all";
         document.getElementById("tag").value = "all";
+
         applyFilters();
 
         const isMobile = window.matchMedia("(max-width: 980px)").matches;
