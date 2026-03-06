@@ -571,8 +571,8 @@ As a middle schooler, this library was a refuge for me and also a place to chat 
             m.openPopup();
             setTimeout(() => {
               map.panInside(m.getLatLng(), {
-                paddingTopLeft: isMobile ? [12, 80] : [460, 120],
-                paddingBottomRight: [24, 24]
+                paddingTopLeft: isMobile ? [12, 70] : [460, 120],
+                paddingBottomRight: isMobile ? [12, 20] : [24, 24]
               });
             }, 50);
           });
