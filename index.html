@@ -1,0 +1,678 @@
+<<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Against the Caption — Bronx Memory Map (Prototype)</title>
+
+  <!-- Leaflet -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+
+  <style>
+    :root{
+      --bg:#0b0f17;
+      --panel:#0f1624;
+      --panel2:#111b2c;
+      --text:#e9eef9;
+      --muted:#a9b6d3;
+      --line:#22304a;
+      --chip:#1a2740;
+      --accent:#b8a7ff;
+      --accent2:#7fe7d3;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    /* ✅ Keep popup inside the viewport + allow scrolling */
+.leaflet-popup-content{
+  max-height: min(520px, calc(100vh - 140px)) !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  padding-right: 6px; /* gives room for scrollbar */
+}
+
+/* Optional: make scrollbar subtle (Chrome/Safari) */
+.leaflet-popup-content::-webkit-scrollbar{ width: 8px; }
+.leaflet-popup-content::-webkit-scrollbar-thumb{
+  background: rgba(127,231,211,0.22);
+  border-radius: 10px;
+}
+
+    /* ====== Layout ====== */
+    .app{
+      display:grid;
+      grid-template-columns: 420px 1fr;
+      height:100dvh;
+      overflow:hidden;
+    }
+    .sidebar{
+      background:linear-gradient(180deg,var(--panel),var(--panel2));
+      border-right:1px solid var(--line);
+      padding:18px 16px;
+      overflow:auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .title{
+      font-size:20px;
+      font-weight:700;
+      margin:0 0 6px 0;
+    }
+    .subtitle{
+      margin:0 0 14px 0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
+    .top-actions{
+      display:flex;
+      gap:10px;
+      margin:10px 0 16px 0;
+      flex-wrap:wrap;
+    }
+    .btn{
+      appearance:none;
+      border:1px solid var(--line);
+      background:#0f1a2e;
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:10px;
+      font-weight:600;
+      font-size:13px;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .btn:hover{border-color:#324567}
+    .btn.primary{
+      background:linear-gradient(135deg, rgba(184,167,255,.2), rgba(127,231,211,.15));
+      border-color:#3b4f78;
+    }
+
+    .filters{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-bottom:14px;
+    }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    label{
+      font-size:12px;
+      color:var(--muted);
+    }
+    input, select{
+      width:100%;
+      padding:10px 10px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:#0c1424;
+      color:var(--text);
+      outline:none;
+    }
+    input::placeholder{color:#7f8fb3}
+    .count{
+      color:var(--muted);
+      font-size:12px;
+      margin:8px 0 10px 0;
+    }
+
+    .cards{display:flex; flex-direction:column; gap:10px;}
+    .empty-state{
+      border:1px dashed #2a3b5c;
+      background:rgba(12,20,36,.55);
+      border-radius:14px;
+      padding:14px 12px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.4;
+    }
+    .empty-state code{
+      color:#cfe0ff;
+      font-size:12px;
+    }
+
+    /* ====== Map area ====== */
+    .map-wrap{
+      position:relative;
+      height:100%;
+      min-height:0;
+    }
+    #map{
+      height:100%;
+      width:100%;
+      filter: brightness(.9) saturate(.9);
+    }
+    .map-wrap::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background: radial-gradient(
+        circle at center,
+        rgba(0,0,0,0) 45%,
+        rgba(0,0,0,.35) 100%
+      );
+    }
+
+    .small{
+      font-size:11px;
+      color:#91a4c9;
+      margin-top:6px;
+      line-height:1.35;
+    }
+
+    /* ===== Cards ===== */
+    .card{
+      border:1px solid rgba(34,48,74,0.9);
+      border-left:3px solid #7fe7d3;
+      background:rgba(12,20,36,.55);
+      border-radius:14px;
+      padding:12px 12px;
+      cursor:pointer;
+      transition:transform .12s ease, border-color .12s ease;
+    }
+    .card:hover{
+      transform: translateY(-1px);
+      border-color:#3b4f78;
+      background:rgba(14,26,46,.75);
+    }
+    .card h3{
+      margin:0 0 8px 0;
+      font-size:16px;
+      line-height:1.2;
+      letter-spacing:.2px;
+    }
+    .meta{ display:flex; flex-wrap:wrap; gap:8px; }
+    .chip{
+      font-size:12px;
+      padding:4px 8px;
+      border-radius:999px;
+      background:var(--chip);
+      border:1px solid #2a3b5c;
+      color:#cfe0ff;
+    }
+
+    /* ===== Popup styling ===== */
+    .leaflet-popup-content-wrapper{
+      background: rgba(9, 13, 22, 0.96) !important;
+      color: #f2f6ff !important;
+      border: 1px solid rgba(184,167,255,0.28) !important;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.55) !important;
+      border-radius: 16px !important;
+    }
+    .leaflet-popup-tip{
+      background: rgba(9, 13, 22, 0.96) !important;
+      box-shadow: none !important;
+      border: 1px solid rgba(184,167,255,0.25) !important;
+    }
+    .leaflet-popup-content{
+      margin: 14px 16px 16px 16px !important;
+      width: 320px !important;
+    }
+
+    .archive-label{
+      font-size: 10px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: rgba(127,231,211,0.9);
+      margin-bottom: 6px;
+      opacity:.9;
+    }
+    .popup h2{
+      font-size: 18px;
+      margin: 6px 0 8px 0;
+      color: #ffffff;
+      letter-spacing: 0.2px;
+      font-weight:600;
+    }
+    .popup .pmeta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-bottom:10px;
+    }
+    .popup p{
+      color:#e8efff !important;
+      font-size:14px;
+      line-height:1.65;
+      letter-spacing:.2px;
+      margin:0 0 10px 0;
+      white-space: pre-wrap;
+    }
+    .links a{
+      color:var(--accent2);
+      word-break:break-word;
+      font-size:12.5px;
+    }
+
+    .media{
+      display:grid;
+      gap:10px;
+      margin-top:10px;
+    }
+    .media img{
+      width:100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.35);
+      display:block;
+    }
+    .media iframe{
+      width:100%;
+      aspect-ratio: 16/9;
+      border:0;
+      border-radius:12px;
+      border:1px solid #2a3b5c;
+    }
+    .popup .small{
+      color: rgba(169,182,211,0.95);
+      font-size: 11px;
+      margin-top: 8px;
+    }
+
+    /* ===== Mobile ===== */
+    @media (max-width: 980px){
+      .app{
+        grid-template-columns: 1fr;
+        grid-template-rows: 44dvh 1fr;
+        height:100dvh;
+      }
+      .sidebar{
+        height:auto;
+        overflow:auto;
+      }
+      .map-wrap{
+        height:auto;
+        min-height:56dvh;
+      }
+      #map{
+        min-height:56dvh;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <h1 class="title">Against the Caption — Bronx Memory Map</h1>
+      <p class="subtitle">
+        A Bronx-centered, community-rooted memory archive. Entries are mapped with <b>approximate locations</b> to protect privacy.
+      </p>
+
+      <div class="top-actions">
+        <a class="btn primary" id="submitLink" href="https://tally.so/r/81dD5O" target="_blank" rel="noreferrer">
+          Submit a memory
+        </a>
+        <button class="btn" id="resetBtn" type="button">Reset</button>
+      </div>
+
+      <div class="filters">
+        <div class="field">
+          <label for="q">Search</label>
+          <input id="q" placeholder="title, neighborhood, tags, text…" />
+        </div>
+        <div class="field">
+          <label for="decade">Decade</label>
+          <select id="decade">
+            <option value="all">All</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="hood">Neighborhood</label>
+          <select id="hood">
+            <option value="all">All</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="tag">Tag</label>
+          <select id="tag">
+            <option value="all">All</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="count" id="count">0 entries</div>
+
+      <section class="cards" id="cards">
+        <div class="empty-state">
+          No entries yet — this is intentionally blank.<br/><br/>
+          When you’re ready, add items inside the <code>entries</code> array in the code.
+        </div>
+      </section>
+    </aside>
+
+    <main class="map-wrap">
+      <div id="map"></div>
+    </main>
+  </div>
+
+  <script>
+    const submitUrl = "https://tally.so/r/81dD5O";
+    document.getElementById("submitLink").href = submitUrl;
+
+  const entries = [
+
+{
+  id: "BX-0001",
+  title: "Looking out from the Bronx",
+  neighborhood: "Soundview",
+  decade: "2020s",
+  tags: ["growing-up-in-the-bronx","the-block","migration-stories"],
+  lat: 40.8200,
+  lng: -73.8800,
+  story: `I took this photo looking out across the Bronx skyline. It’s the kind of view you see when you’re moving through the city, from a train, a bridge, somewhere in between places.
+
+I’ve spent a lot of time thinking about leaving the Bronx, coming back to it, and trying to understand what it means to carry a place with you even when you’re somewhere else.
+
+So much of what gets written about the Bronx comes from outside of it. This archive is trying to hold something different. It's about the small memories people carry with them. The places that stay with you even when you leave.
+
+This photo feels like that moment: looking out, looking back, trying to see the Bronx again.`,
+  artifact:{
+    type:"image",
+    url:"assets/images/bronx-skyline.jpg",
+    credit:"Contributor submission (anonymous)"
+  }
+},
+
+{
+  id: "BX-0002",
+  title: "Francis Martin Library after school",
+  neighborhood: "Morris Heights",
+  decade: "2000s",
+  tags: ["growing-up-in-the-bronx","organizing-activism","migration-stories"],
+  lat: 40.8505,
+  lng: -73.9135,
+  story: `On 181st and University, there is a library called the Francis Martin Library. This library is where I would go after school when I went to middle school around Andrew’s Ave.
+
+I would go here to read manga and books like The Coldest Winter Ever by Sistah Souljah and Fly Girl by Omar Tyree.
+
+As a middle schooler, this library was a refuge for me and also a place to chat with people online since I didn’t have WiFi at home.`,
+
+  songLink: "https://www.youtube.com/results?search_query=Can't+Help+But+Wait+Trey+Songz"
+}
+
+];
+
+    // ---------------- Map setup ----------------
+    const map = L.map("map", { zoomControl: true });
+
+    // Bronx bounds (keeps panning focused)
+    const bronxBounds = L.latLngBounds(
+      [40.785, -73.933],
+      [40.915, -73.765]
+    );
+    map.setMaxBounds(bronxBounds);
+    map.options.maxBoundsViscosity = 0.9;
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Optional subtle dark overlay (you can remove if too dark)
+    L.rectangle(
+      [[40.6,-74.2],[41.0,-73.6]],
+      {
+        color: "transparent",
+        fillColor: "#000",
+        fillOpacity: 0.18,
+        interactive:false
+      }
+    ).addTo(map);
+
+    const markerLayer = L.layerGroup().addTo(map);
+    const markerById = new Map();
+
+    function normalize(s){ return String(s ?? "").toLowerCase().trim(); }
+
+    function escapeHtml(str){
+      return String(str ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+    function escapeAttr(str){ return escapeHtml(str); }
+
+    function popupHtml(e){
+      const tagChips = (e.tags || []).map(t => `<span class="chip">${escapeHtml(t)}</span>`).join("");
+      const song = e.songLink
+        ? `<div class="links"><b>Song link:</b> <a href="${escapeAttr(e.songLink)}" target="_blank" rel="noreferrer">${escapeHtml(e.songLink)}</a></div>`
+        : "";
+
+      let mediaHtml = "";
+      if (e.artifact && e.artifact.type === "image" && e.artifact.url) {
+        mediaHtml = `
+          <div class="media">
+            <img src="${escapeAttr(e.artifact.url)}" alt="artifact image"/>
+            ${e.artifact.credit ? `<div class="small">${escapeHtml(e.artifact.credit)}</div>` : ""}
+          </div>`;
+      } else if (e.artifact && e.artifact.type === "video" && e.artifact.url) {
+        mediaHtml = `
+          <div class="media">
+            <iframe src="${escapeAttr(e.artifact.url)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            ${e.artifact.credit ? `<div class="small">${escapeHtml(e.artifact.credit)}</div>` : ""}
+          </div>`;
+      }
+
+      return `
+        <div class="popup">
+          <div class="archive-label">AGAINST THE CAPTION • BRONX MEMORY MAP</div>
+          <h2>${escapeHtml(e.title)}</h2>
+
+          <div class="pmeta">
+            <span class="chip">${escapeHtml(e.neighborhood)}</span>
+            <span class="chip">${escapeHtml(e.decade)}</span>
+            ${tagChips}
+          </div>
+
+          <p>${escapeHtml(e.story)}</p>
+
+          ${song}
+          ${mediaHtml}
+        </div>
+      `;
+    }
+
+    function uniqueSorted(arr){
+      return Array.from(new Set(arr.filter(Boolean))).sort((a,b) => a.localeCompare(b));
+    }
+
+    function populateSelect(selectId, values){
+      const sel = document.getElementById(selectId);
+      const current = sel.value;
+      const options = [`<option value="all">All</option>`]
+        .concat(values.map(v => `<option value="${escapeAttr(v)}">${escapeHtml(v)}</option>`));
+      sel.innerHTML = options.join("");
+      if ([...sel.options].some(o => o.value === current)) sel.value = current;
+    }
+
+    function renderMarkers(list){
+      markerLayer.clearLayers();
+      markerById.clear();
+
+      list.forEach(e => {
+        const m = L.circleMarker([e.lat, e.lng], {
+          radius: 11,
+          weight: 3,
+          color: "#0b0f17",
+          fillColor: "#7fe7d3",
+          fillOpacity: 0.95
+        }).addTo(markerLayer);
+
+        const isMobile = window.matchMedia("(max-width: 980px)").matches;
+
+        m.bindPopup(popupHtml(e), {
+          maxWidth: 340,
+          autoPan: true,
+          autoPanPaddingTopLeft: isMobile ? [12, 12] : [460, 24],
+          autoPanPaddingBottomRight: [24, 24]
+        });
+
+        markerById.set(e.id, m);
+      });
+    }
+
+    function renderCards(list){
+      const cards = document.getElementById("cards");
+      const count = document.getElementById("count");
+      count.textContent = `${list.length} entr${list.length === 1 ? "y" : "ies"}`;
+
+      if (list.length === 0) {
+        cards.innerHTML = `
+          <div class="empty-state">
+            No entries yet — this is intentionally blank.<br/><br/>
+            Add approved entries inside the <code>entries</code> array in the code.
+          </div>
+        `;
+        return;
+      }
+
+      cards.innerHTML = list.map(e => {
+        const chips = [
+          `<span class="chip">${escapeHtml(e.neighborhood)}</span>`,
+          `<span class="chip">${escapeHtml(e.decade)}</span>`,
+          ...(e.tags || []).slice(0,3).map(t => `<span class="chip">${escapeHtml(t)}</span>`)
+        ].join("");
+
+        return `
+          <article class="card" data-id="${escapeAttr(e.id)}">
+            <h3>${escapeHtml(e.title)}</h3>
+            <div class="meta">${chips}</div>
+          </article>
+        `;
+      }).join("");
+
+      cards.querySelectorAll(".card").forEach(card => {
+        card.addEventListener("click", () => {
+          const id = card.getAttribute("data-id");
+          const m = markerById.get(id);
+          if (!m) return;
+          const isMobile = window.matchMedia("(max-width: 980px)").matches;
+const zoom = isMobile ? 13 : 14;
+
+map.flyTo(m.getLatLng(), zoom, { animate: true, duration: 0.6 });
+
+// ✅ wait for the fly animation to finish, THEN open popup
+map.once("moveend", () => {
+  m.openPopup();
+
+  // ✅ nudge so popup is fully visible (sidebar + top)
+  setTimeout(() => {
+    map.panInside(m.getLatLng(), {
+      paddingTopLeft: isMobile ? [12, 80] : [460, 120],
+      paddingBottomRight: [24, 24]
+    });
+  }, 50);
+});
+        });
+      });
+    }
+
+    function applyFilters(){
+      const q = normalize(document.getElementById("q").value);
+      const decade = document.getElementById("decade").value;
+      const hood = document.getElementById("hood").value;
+      const tag = document.getElementById("tag").value;
+
+      const filtered = entries.filter(e => {
+        if (decade !== "all" && e.decade !== decade) return false;
+        if (hood !== "all" && e.neighborhood !== hood) return false;
+        if (tag !== "all" && !(e.tags || []).includes(tag)) return false;
+
+        if (!q) return true;
+        const hay = [
+          e.title, e.neighborhood, e.decade,
+          (e.tags || []).join(" "),
+          e.story
+        ].join(" ");
+        return normalize(hay).includes(q);
+      });
+
+      renderMarkers(filtered);
+      renderCards(filtered);
+    }
+
+    function init(){
+      populateSelect("decade", uniqueSorted(entries.map(e => e.decade)));
+      populateSelect("hood", uniqueSorted(entries.map(e => e.neighborhood)));
+      populateSelect("tag", uniqueSorted(entries.flatMap(e => e.tags || [])));
+
+      renderMarkers(entries);
+      renderCards(entries);
+
+      // ✅ Focus the first entry so popup is visible immediately
+      if (entries.length > 0) {
+        const first = entries[0];
+        const isMobile = window.matchMedia("(max-width: 980px)").matches;
+        const zoom = isMobile ? 13 : 14;
+
+        map.setView([first.lat, first.lng], zoom, { animate: false });
+
+        const m = markerById.get(first.id);
+        if (m) {
+          m.openPopup();
+          setTimeout(() => {
+            map.panInside(m.getLatLng(), {
+              paddingTopLeft: isMobile ? [12, 12] : [460, 24],
+              paddingBottomRight: [24, 24]
+            });
+          }, 50);
+        }
+      } else {
+        // If empty, show Bronx overview
+        const isMobile = window.matchMedia("(max-width: 980px)").matches;
+        map.fitBounds(bronxBounds, {
+          padding: isMobile ? [18,18] : [24,24],
+          maxZoom: isMobile ? 12 : 13
+        });
+      }
+
+      ["q","decade","hood","tag"].forEach(id => {
+        document.getElementById(id).addEventListener("input", applyFilters);
+        document.getElementById(id).addEventListener("change", applyFilters);
+      });
+
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        document.getElementById("q").value = "";
+        document.getElementById("decade").value = "all";
+        document.getElementById("hood").value = "all";
+        document.getElementById("tag").value = "all";
+        applyFilters();
+
+        // Reset to Bronx overview
+        const isMobile = window.matchMedia("(max-width: 980px)").matches;
+        map.fitBounds(bronxBounds, {
+          padding: isMobile ? [18,18] : [24,24],
+          maxZoom: isMobile ? 12 : 13
+        });
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
