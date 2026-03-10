@@ -737,8 +737,8 @@
        MOBILE TAB BAR (phones only)
   ===================================================== -->
   <div class="mobile-tabs">
-    <button class="mobile-tab" id="tabMap" onclick="switchTab('map')">🗺 Map</button>
-    <button class="mobile-tab active" id="tabList" onclick="switchTab('list')">☰ Memories</button>
+    <button class="mobile-tab" id="tabMap">🗺 Map</button>
+    <button class="mobile-tab active" id="tabList">☰ Memories</button>
   </div>
 
   <!-- =====================================================
@@ -837,7 +837,6 @@
 
     /* =====================================================
        SECTION A: CONFIGURATION
-       Change URLs or map bounds here
     ===================================================== */
     const SUBMIT_URL   = "https://tally.so/r/81dD5O";
     const BRONX_BOUNDS = [[40.785, -73.935], [40.915, -73.765]];
@@ -1253,6 +1252,10 @@
         applyFilters();
         map.fitBounds(bronxBounds, { padding: isMobile ? [10,10] : [24,24], maxZoom: isMobile ? 11 : 13 });
       });
+
+      // Wire up mobile tab buttons here (safer than onclick attributes)
+      document.getElementById("tabMap").addEventListener("click",  () => switchTab("map"));
+      document.getElementById("tabList").addEventListener("click", () => switchTab("list"));
     }
 
     init();
