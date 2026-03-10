@@ -523,32 +523,36 @@
 
     /* =====================================================
        SECTION 11: MOBILE — TAB BAR + LAYOUT
-       Top tabs switch between Map and Memories views
     ===================================================== */
-    .mobile-tabs { display: none; } /* desktop: hidden */
+    .mobile-tabs { display: none; }
 
     @media (max-width: 980px) {
+      /* Stack everything */
       .app {
-        grid-template-columns: 1fr;
-        grid-template-rows: 1fr;
+        display: block;
         height: 100dvh;
-        position: relative;
+        padding-top: 48px;
       }
-      .map-wrap { position: absolute; inset: 0; top: 48px; height: calc(100dvh - 48px); }
-      #map { height: 100%; }
+      /* Map fills full screen below tab bar, hidden by default */
+      .map-wrap {
+        position: fixed;
+        top: 48px; left: 0; right: 0; bottom: 0;
+        display: none;
+      }
+      #map { height: 100%; width: 100%; }
+
+      /* Sidebar fills full screen below tab bar, shown by default */
       .sidebar {
-        position: absolute;
-        inset: 0;
-        top: 48px;
-        height: calc(100dvh - 48px);
+        position: fixed;
+        top: 48px; left: 0; right: 0; bottom: 0;
         overflow-y: auto;
         border-right: none;
-        z-index: 2;
-        display: flex; /* visible by default = Memories tab active */
+        display: flex;
+        flex-direction: column;
+        z-index: 10;
       }
-      .sidebar.map-active { display: none; }
 
-      /* Compact everything on mobile */
+      /* Compact mobile header */
       .sidebar-header { padding: 8px 14px; }
       .title { font-size: 17px; }
       .why-statement { font-size: 10px; }
@@ -559,7 +563,7 @@
       .cards { padding: 6px 10px; }
       .map-legend { display: none; }
 
-      /* Tab bar */
+      /* Tab bar fixed at top */
       .mobile-tabs {
         display: flex;
         position: fixed;
@@ -589,6 +593,7 @@
       .mobile-tab:last-child { border-right: none; }
       .mobile-tab.active { color: var(--gold); }
       .leaflet-control-attribution { font-size: 8px !important; }
+      .leaflet-popup { display: none !important; }
     }
 
 
@@ -1188,18 +1193,26 @@
 
     /* =====================================================
        SECTION N: MOBILE TAB SWITCHING
+       Uses direct style changes — simpler and more reliable
     ===================================================== */
     function switchTab(tab) {
-      const sidebar = document.querySelector(".sidebar");
-      const tabMap  = document.getElementById("tabMap");
-      const tabList = document.getElementById("tabList");
+      const isMobile = window.matchMedia("(max-width:980px)").matches;
+      if (!isMobile) return;
+
+      const sidebar  = document.querySelector(".sidebar");
+      const mapWrap  = document.querySelector(".map-wrap");
+      const tabMap   = document.getElementById("tabMap");
+      const tabList  = document.getElementById("tabList");
+
       if (tab === "map") {
-        sidebar.classList.add("map-active");
+        sidebar.style.display  = "none";
+        mapWrap.style.display  = "block";
         tabMap.classList.add("active");
         tabList.classList.remove("active");
-        setTimeout(() => map.invalidateSize(), 50);
+        setTimeout(() => map.invalidateSize(), 100);
       } else {
-        sidebar.classList.remove("map-active");
+        sidebar.style.display  = "flex";
+        mapWrap.style.display  = "none";
         tabList.classList.add("active");
         tabMap.classList.remove("active");
         closeSheet();
