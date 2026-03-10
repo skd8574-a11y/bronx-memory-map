@@ -340,7 +340,7 @@
     .leaflet-popup-tip { background: var(--ink) !important; }
     .leaflet-popup-content {
       margin: 0 !important;
-      width: 300px !important;
+      width: 310px !important;
       max-height: min(500px, calc(100vh - 140px)) !important;
       overflow-y: auto !important;
       overscroll-behavior: contain;
@@ -714,7 +714,7 @@
       lat: 40.8185, lng: -73.8675,
       story: `Growing up I spent summers at my grandmother's apartment and every Christmas at the foot of her tree. That apartment was a grounding home we all could return to as a family. Somehow she managed to make a two bedroom apartment in the projects feel like a mansion. An endless expanse of adventure.\n\nShe taught me to read Black literature and we watched hours of movies and TV shows, laughing until our sides hurt. My Mema and her home is the keeper of memory in my family, and it's a cherished place.`,
       contributorCredit: "Contributor submission (Kaia)",
-      soundtrack: { label:"Never Too Much — Luther Vandross", spotifyUrl:"https://open.spotify.com/search/Never%20Too%20Much%20Luther%20Vandross" }
+      soundtrack: { label:"Never Too Much — Luther Vandross", spotifyUrl:"https://open.spotify.com/track/3nFJbZCHP4d9vduKjJLdBL" }
     },
     {
       id: "BX-0004",
@@ -808,12 +808,23 @@
         <img src="${escHtml(e.artifact.url)}" alt="memory image"/>
         ${e.artifact.credit ? `<div class="small">${escHtml(e.artifact.credit)}</div>` : ""}
       </div>` : "";
-    const soundtrackHtml = e.soundtrack?.spotifyUrl ? `
-      <div class="soundtrack">
-        <div class="label">Memory soundtrack</div>
-        ${e.soundtrack.label ? `<div class="small" style="color:#aaa;font-style:normal;">${escHtml(e.soundtrack.label)}</div>` : ""}
-        <a class="btn" href="${escHtml(e.soundtrack.spotifyUrl)}" target="_blank" rel="noreferrer">Open in Spotify</a>
-      </div>` : "";
+    const soundtrackHtml = e.soundtrack?.spotifyUrl ? (() => {
+      const trackId = e.soundtrack.spotifyUrl.match(/track\/([a-zA-Z0-9]+)/)?.[1];
+      if (!trackId) return "";
+      return `
+        <div class="soundtrack">
+          <div class="label">♪ Memory Soundtrack</div>
+          <iframe
+            src="https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0"
+            width="100%"
+            height="80"
+            frameborder="0"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+            style="border-radius:10px;margin-top:6px;display:block;"
+          ></iframe>
+        </div>`;
+    })() : "";
     return `
       <div class="popup-inner">
         <div class="popup">
