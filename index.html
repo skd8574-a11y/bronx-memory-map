@@ -14,6 +14,11 @@
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 
   <style>
+
+    /* =====================================================
+       SECTION 1: DESIGN TOKENS
+       To change colors — edit the values here.
+    ===================================================== */
     :root {
       --cream:  #FBF5E6;
       --paper:  #F2E8D0;
@@ -24,25 +29,22 @@
       --sage:   #2D6A4F;
       --muted:  #8B7355;
       --border: #DDD0B4;
-      --bdark:  #C4B090;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'IBM Plex Sans', sans-serif; background: var(--cream); color: var(--ink); }
 
-    body {
-      font-family: 'IBM Plex Sans', sans-serif;
-      background: var(--cream);
-      color: var(--ink);
-    }
 
-    /* ── LAYOUT ───────────────────────────────────────── */
+    /* =====================================================
+       SECTION 2: DESKTOP LAYOUT
+       Two-column: sidebar (400px left) + map (right)
+    ===================================================== */
     .app {
       display: grid;
       grid-template-columns: 400px 1fr;
       height: 100dvh;
       overflow: hidden;
     }
-
     .sidebar {
       background: var(--cream);
       border-right: 1px solid var(--border);
@@ -51,25 +53,21 @@
       overflow: hidden;
       order: 1;
     }
-
-    .map-wrap {
-      position: relative;
-      height: 100%;
-      min-height: 0;
-      order: 2;
-    }
-
+    .map-wrap { position: relative; height: 100%; order: 2; }
     #map { height: 100%; width: 100%; }
 
-    /* ── HEADER ───────────────────────────────────────── */
+
+    /* =====================================================
+       SECTION 3: SIDEBAR — HEADER
+       Dark header with title + permanent "why" statement
+    ===================================================== */
     .sidebar-header {
       background: var(--ink);
       color: var(--cream);
-      padding: 12px 18px 10px;
+      padding: 12px 18px 12px;
       border-bottom: 3px solid var(--rust);
       flex-shrink: 0;
     }
-
     .header-kicker {
       font-family: 'IBM Plex Mono', monospace;
       font-size: 9px;
@@ -78,35 +76,41 @@
       text-transform: uppercase;
       margin-bottom: 3px;
     }
-
     .title {
       font-family: 'Playfair Display', serif;
       font-size: 22px;
       font-weight: 700;
       line-height: 1.1;
       color: var(--cream);
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     .title em { font-style: italic; color: var(--gold); }
 
-    .subtitle {
-      font-size: 10px;
-      color: #7A6A50;
-      line-height: 1.4;
+    /* The "why" — always visible, answers professor's feedback */
+    .why-statement {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 11px;
+      line-height: 1.6;
+      color: #9A8060;
+      font-style: italic;
+      border-left: 2px solid var(--rust);
+      padding-left: 8px;
     }
 
-    /* ── STATS BAR ────────────────────────────────────── */
+
+    /* =====================================================
+       SECTION 4: SIDEBAR — STATS BAR
+       Memory count, neighborhood count, decade sparkline
+    ===================================================== */
     .stats-bar {
       background: var(--paper);
       border-bottom: 1px solid var(--border);
       padding: 6px 18px;
       display: flex;
       align-items: center;
-      gap: 0;
       flex-shrink: 0;
       overflow-x: auto;
     }
-
     .stat-block {
       display: flex;
       align-items: baseline;
@@ -118,7 +122,6 @@
       flex-shrink: 0;
     }
     .stat-block:last-child { border-right: none; margin-right: 0; }
-
     .stat-num {
       font-family: 'Playfair Display', serif;
       font-size: 20px;
@@ -133,12 +136,10 @@
       letter-spacing: 0.1em;
       text-transform: uppercase;
     }
-
     .decade-spark { display: flex; align-items: flex-end; gap: 3px; height: 20px; }
     .dec-col { display: flex; flex-direction: column; align-items: center; gap: 2px; }
     .dec-bar { width: 13px; background: var(--gold); min-height: 2px; border-radius: 1px 1px 0 0; }
     .dec-tick { font-family: 'IBM Plex Mono', monospace; font-size: 7px; color: var(--muted); }
-
     .theme-pills { display: flex; gap: 4px; overflow: hidden; max-width: 200px; }
     .theme-pill {
       font-family: 'IBM Plex Mono', monospace;
@@ -154,37 +155,50 @@
     }
     .theme-pill:hover { background: var(--ink); color: var(--cream); border-color: var(--ink); }
 
-    /* ── TOP ACTIONS ──────────────────────────────────── */
-    .top-actions {
-      display: flex;
-      gap: 8px;
-      padding: 10px 18px;
+
+    /* =====================================================
+       SECTION 5: SIDEBAR — SUBMIT CTA
+       The main action — adding a memory to the archive
+    ===================================================== */
+    .submit-cta {
+      padding: 10px 18px 8px;
       border-bottom: 1px solid var(--border);
       background: var(--paper);
       flex-shrink: 0;
     }
-
-    .btn {
-      appearance: none;
+    .btn-submit {
+      display: block;
+      width: 100%;
+      text-align: center;
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.06em;
+      font-size: 11px;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      padding: 8px 14px;
+      background: var(--rust);
+      color: white;
+      border: none;
+      border-radius: 999px;
+      padding: 10px 18px;
       cursor: pointer;
       text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.15s;
-      border: none;
+      transition: background 0.15s;
+      font-weight: 600;
     }
-    .btn.primary { background: var(--rust); color: white; border-radius: 999px; }
-    .btn.primary:hover { background: var(--rust2); }
-    .btn.secondary { background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; }
-    .btn.secondary:hover { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+    .btn-submit:hover { background: var(--rust2); }
+    .submit-note {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 5px;
+      line-height: 1.4;
+    }
 
-    /* ── FILTERS ──────────────────────────────────────── */
+
+    /* =====================================================
+       SECTION 6: SIDEBAR — FILTERS
+       Search box + decade / neighborhood / tag dropdowns
+    ===================================================== */
     .filters {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -194,9 +208,7 @@
       background: var(--paper);
       flex-shrink: 0;
     }
-
     .field { display: flex; flex-direction: column; gap: 4px; }
-
     label {
       font-family: 'IBM Plex Mono', monospace;
       font-size: 8px;
@@ -204,7 +216,6 @@
       text-transform: uppercase;
       color: var(--muted);
     }
-
     input, select {
       width: 100%;
       padding: 7px 9px;
@@ -226,8 +237,28 @@
       background-color: var(--cream);
       padding-right: 26px;
     }
+    .btn-reset {
+      appearance: none;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      transition: all 0.15s;
+      align-self: flex-end;
+    }
+    .btn-reset:hover { background: var(--ink); color: var(--cream); border-color: var(--ink); }
 
-    /* ── COUNT ────────────────────────────────────────── */
+
+    /* =====================================================
+       SECTION 7: SIDEBAR — MEMORY CARDS
+       The scrollable list of entries
+    ===================================================== */
     .count {
       font-family: 'IBM Plex Mono', monospace;
       font-size: 10px;
@@ -237,12 +268,15 @@
       flex-shrink: 0;
     }
     .count strong { color: var(--rust); font-size: 13px; }
-
-    /* ── CARDS ────────────────────────────────────────── */
-    .cards { flex: 1; overflow-y: auto; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
-
+    .cards {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
     .empty-state {
-      margin: 4px 0;
       border: 1px dashed var(--border);
       border-radius: 12px;
       padding: 14px;
@@ -250,7 +284,6 @@
       color: var(--muted);
       line-height: 1.6;
     }
-
     .card {
       padding: 12px 14px 12px 12px;
       border: 1px solid var(--border);
@@ -258,26 +291,11 @@
       border-radius: 12px;
       cursor: pointer;
       transition: background 0.15s, border-left-color 0.15s, box-shadow 0.15s;
-      position: relative;
       background: white;
     }
-    .card:hover {
-      background: var(--paper);
-      border-left-color: var(--gold);
-      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-    }
-    .card.active {
-      background: var(--paper);
-      border-left-color: var(--rust);
-      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-    }
-
-    .card-meta {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 3px;
-    }
+    .card:hover { background: var(--paper); border-left-color: var(--gold); box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    .card.active { background: var(--paper); border-left-color: var(--rust); box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    .card-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px; }
     .card-neighborhood {
       font-family: 'IBM Plex Mono', monospace;
       font-size: 8px;
@@ -285,11 +303,7 @@
       text-transform: uppercase;
       letter-spacing: 0.12em;
     }
-    .card-music {
-      font-size: 10px;
-      color: var(--sage);
-    }
-
+    .card-music { font-size: 10px; color: var(--sage); }
     .card h3 {
       font-family: 'Playfair Display', serif;
       font-size: 14px;
@@ -297,7 +311,6 @@
       line-height: 1.3;
       margin-bottom: 4px;
     }
-
     .card-excerpt {
       font-size: 11px;
       color: var(--muted);
@@ -308,9 +321,7 @@
       overflow: hidden;
       margin-bottom: 5px;
     }
-
     .meta { display: flex; flex-wrap: wrap; gap: 4px; }
-
     .chip {
       font-family: 'IBM Plex Mono', monospace;
       font-size: 8px;
@@ -320,17 +331,57 @@
       border-radius: 999px;
       background: rgba(0,0,0,0.04);
     }
-    .chip.decade {
-      background: var(--ink);
-      color: var(--gold);
-      border-color: var(--ink);
-      border-radius: 999px;
+    .chip.decade { color: white; border-color: transparent; }
+
+
+    /* =====================================================
+       SECTION 8: MAP — LEGEND OVERLAY
+       Decade color key, sits bottom-right on the map
+    ===================================================== */
+    .map-legend {
+      position: absolute;
+      bottom: 28px;
+      right: 12px;
+      background: rgba(255,255,255,0.93);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      z-index: 500;
+      backdrop-filter: blur(4px);
+      min-width: 120px;
+    }
+    .legend-title {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+    .legend-items { display: flex; flex-direction: column; gap: 5px; }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--ink);
+    }
+    .legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      border: 1.5px solid white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+      flex-shrink: 0;
     }
 
-    /* ── POPUP ────────────────────────────────────────── */
+
+    /* =====================================================
+       SECTION 9: MAP — DESKTOP POPUP
+       Dark card shown when clicking a pin on desktop
+    ===================================================== */
     .leaflet-popup-content-wrapper {
       background: var(--ink) !important;
-      color: var(--cream) !important;
       border: none !important;
       border-radius: 16px !important;
       box-shadow: 0 8px 40px rgba(0,0,0,0.4) !important;
@@ -338,6 +389,7 @@
       overflow: hidden !important;
     }
     .leaflet-popup-tip { background: var(--ink) !important; }
+    .leaflet-popup-close-button { color: #666 !important; top: 10px !important; right: 12px !important; }
     .leaflet-popup-content {
       margin: 0 !important;
       width: 310px !important;
@@ -347,9 +399,7 @@
     }
     .leaflet-popup-content::-webkit-scrollbar { width: 4px; }
     .leaflet-popup-content::-webkit-scrollbar-thumb { background: #333; }
-
     .popup-inner { padding: 16px; }
-
     .archive-label {
       font-family: 'IBM Plex Mono', monospace;
       font-size: 8px;
@@ -376,22 +426,10 @@
       margin: 0 0 10px;
       white-space: pre-wrap;
     }
-    .small {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px;
-      color: #666;
-      margin-top: 5px;
-      line-height: 1.35;
-      font-style: italic;
-    }
-    .media { display: grid; gap: 8px; margin-top: 10px; }
+    .small { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #666; margin-top: 5px; line-height: 1.35; font-style: italic; }
+    .media { margin-top: 10px; }
     .media img { width: 100%; border: 1px solid #333; border-radius: 10px; display: block; }
-
-    .soundtrack {
-      margin-top: 12px;
-      padding-top: 10px;
-      border-top: 1px solid #333;
-    }
+    .soundtrack { margin-top: 12px; padding-top: 10px; border-top: 1px solid #333; }
     .soundtrack .label {
       font-family: 'IBM Plex Mono', monospace;
       font-size: 8px;
@@ -400,32 +438,94 @@
       color: var(--sage);
       margin-bottom: 6px;
     }
-    .popup .btn {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.06em;
-      padding: 7px 14px;
-      background: #1DB954;
-      color: white;
-      border: none;
-      border-radius: 999px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 8px;
-      transition: background 0.15s;
-      text-transform: uppercase;
+
+
+    /* =====================================================
+       SECTION 10: MOBILE — BOTTOM SHEET
+       Slides up from the bottom when a pin is tapped.
+       Map stays visible above it. Much better than a
+       full-screen popup blocking everything.
+    ===================================================== */
+    .bottom-sheet { display: none; } /* desktop: hidden */
+
+    @media (max-width: 980px) {
+      .bottom-sheet {
+        display: block;
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        background: var(--cream);
+        border-radius: 20px 20px 0 0;
+        border-top: 3px solid var(--rust);
+        z-index: 800;
+        transform: translateY(100%);
+        transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+        max-height: 60dvh;
+        overflow-y: auto;
+      }
+      .bottom-sheet.open { transform: translateY(0); }
+
+      .sheet-handle {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px 16px 4px;
+        position: sticky;
+        top: 0;
+        background: var(--cream);
+        z-index: 1;
+      }
+      .sheet-handle-bar { width: 36px; height: 4px; background: var(--border); border-radius: 2px; }
+      .sheet-close {
+        position: absolute;
+        right: 16px;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 10px;
+        color: var(--muted);
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+      .sheet-body { padding: 4px 18px 28px; }
+      .sheet-kicker {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 8px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--rust);
+        margin-bottom: 4px;
+      }
+      .sheet-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 10px;
+      }
+      .sheet-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+      .sheet-story { font-size: 13px; line-height: 1.8; color: #4A3E30; white-space: pre-wrap; margin-bottom: 16px; }
+      .sheet-img { width: 100%; border-radius: 10px; border: 1px solid var(--border); display: block; margin-bottom: 14px; }
+      .sheet-soundtrack { background: var(--ink); border-radius: 10px; padding: 12px; margin-bottom: 14px; }
+      .sheet-soundtrack-label {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 8px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--sage);
+        margin-bottom: 8px;
+      }
+      .sheet-attrib { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--muted); border-top: 1px solid var(--border); padding-top: 10px; }
+
+      /* Hide desktop popup on mobile — use bottom sheet instead */
+      .leaflet-popup { display: none !important; }
     }
-    .popup .btn:hover { background: #19a349; }
 
-    /* ── SCROLLBAR ────────────────────────────────────── */
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border); }
 
-    /* ── MOBILE ───────────────────────────────────────── */
+    /* =====================================================
+       SECTION 11: MOBILE — TAB BAR + LAYOUT
+       Top tabs switch between Map and Memories views
+    ===================================================== */
+    .mobile-tabs { display: none; } /* desktop: hidden */
+
     @media (max-width: 980px) {
       .app {
         grid-template-columns: 1fr;
@@ -433,18 +533,8 @@
         height: 100dvh;
         position: relative;
       }
-
-      /* Both panels fill full height, map shown by default */
-      .map-wrap {
-        position: absolute;
-        inset: 0;
-        top: 48px; /* below tab bar */
-        height: calc(100dvh - 48px);
-        display: block;
-        z-index: 1;
-      }
-      #map { height: 100%; min-height: unset; }
-
+      .map-wrap { position: absolute; inset: 0; top: 48px; height: calc(100dvh - 48px); }
+      #map { height: 100%; }
       .sidebar {
         position: absolute;
         inset: 0;
@@ -452,24 +542,23 @@
         height: calc(100dvh - 48px);
         overflow-y: auto;
         border-right: none;
-        border-top: none;
         z-index: 2;
-        display: flex; /* visible by default on mobile */
+        display: flex; /* visible by default = Memories tab active */
       }
-
       .sidebar.map-active { display: none; }
 
-      /* Compact header on mobile */
-      .sidebar-header { padding: 8px 14px 6px; }
+      /* Compact everything on mobile */
+      .sidebar-header { padding: 8px 14px; }
       .title { font-size: 17px; }
-      .subtitle { display: none; }
-      .top-actions { padding: 7px 14px; }
+      .why-statement { font-size: 10px; }
+      .stats-bar { display: none; }
+      .submit-cta { padding: 7px 14px 6px; }
       .filters { padding: 8px 14px; gap: 6px; grid-template-columns: 1fr 1fr; }
       .count { padding: 5px 14px; }
       .cards { padding: 6px 10px; }
-      .stats-bar { display: none; }
+      .map-legend { display: none; }
 
-      /* Mobile tab bar at top */
+      /* Tab bar */
       .mobile-tabs {
         display: flex;
         position: fixed;
@@ -479,7 +568,6 @@
         border-bottom: 2px solid var(--rust);
         z-index: 1000;
       }
-
       .mobile-tab {
         flex: 1;
         display: flex;
@@ -490,36 +578,30 @@
         font-size: 10px;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: #7A6A50;
+        color: #5A4830;
         background: none;
         border: none;
+        border-right: 1px solid #2A1A10;
         cursor: pointer;
         transition: color 0.15s;
-        border-right: 1px solid #2A2010;
       }
       .mobile-tab:last-child { border-right: none; }
       .mobile-tab.active { color: var(--gold); }
-      .mobile-tab .tab-icon { font-size: 14px; }
-
-      .leaflet-popup-content { width: min(82vw, 270px) !important; max-height: 50dvh !important; }
       .leaflet-control-attribution { font-size: 8px !important; }
     }
 
-    /* Hide tab bar on desktop */
-    .mobile-tabs { display: none; }
-    /* Hide leaflet attribution behind intro */
-    .leaflet-control-attribution {
-      transition: opacity 0.5s;
-    }
-    body:has(#intro:not(.fade-out)) .leaflet-control-attribution {
-      opacity: 0;
-      pointer-events: none;
-    }
+
+    /* =====================================================
+       SECTION 12: INTRO SCREEN
+       Cinematic full-screen opening. Lines fade in one
+       by one. Skip button top-right for repeat visitors.
+       To edit the text, find the HTML below (INTRO SCREEN)
+    ===================================================== */
     .intro {
       position: fixed;
       inset: 0;
       background: var(--ink);
-      z-index: 1000;
+      z-index: 2000;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -527,18 +609,8 @@
       padding: 40px 24px;
       transition: opacity 0.8s ease;
     }
-
-    .intro.fade-out {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .intro-inner {
-      max-width: 560px;
-      width: 100%;
-      text-align: center;
-    }
-
+    .intro.fade-out { opacity: 0; pointer-events: none; }
+    .intro-inner { max-width: 560px; width: 100%; text-align: center; }
     .intro-kicker {
       font-family: 'IBM Plex Mono', monospace;
       font-size: 9px;
@@ -549,7 +621,6 @@
       opacity: 0;
       animation: fadeUp 0.8s ease 0.3s forwards;
     }
-
     .intro-line {
       font-family: 'Playfair Display', serif;
       font-size: clamp(22px, 4vw, 36px);
@@ -559,16 +630,10 @@
       margin-bottom: 12px;
       opacity: 0;
     }
-
-    .intro-line em {
-      font-style: italic;
-      color: var(--gold);
-    }
-
+    .intro-line em { font-style: italic; color: var(--gold); }
     .intro-line:nth-child(2) { animation: fadeUp 0.9s ease 0.7s forwards; }
     .intro-line:nth-child(3) { animation: fadeUp 0.9s ease 1.3s forwards; }
     .intro-line:nth-child(4) { animation: fadeUp 0.9s ease 1.9s forwards; }
-
     .intro-body {
       font-family: 'IBM Plex Sans', sans-serif;
       font-size: 14px;
@@ -578,7 +643,6 @@
       opacity: 0;
       animation: fadeUp 0.9s ease 2.6s forwards;
     }
-
     .intro-enter {
       font-family: 'IBM Plex Mono', monospace;
       font-size: 11px;
@@ -594,20 +658,15 @@
       animation: fadeUp 0.9s ease 3.2s forwards;
       transition: background 0.2s, border-color 0.2s;
     }
-    .intro-enter:hover {
-      background: var(--rust);
-      border-color: var(--rust);
-    }
-
+    .intro-enter:hover { background: var(--rust); border-color: var(--rust); }
     .intro-skip {
       position: absolute;
-      top: 20px;
-      right: 24px;
+      top: 20px; right: 24px;
       font-family: 'IBM Plex Mono', monospace;
       font-size: 9px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #4A3828;
+      color: #3A2818;
       background: none;
       border: none;
       cursor: pointer;
@@ -616,19 +675,10 @@
       transition: color 0.15s;
     }
     .intro-skip:hover { color: var(--muted); }
-
-    /* Subtle animated Bronx outline in background */
-    .intro-bg {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-      pointer-events: none;
-    }
-
+    .intro-bg { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
     .intro-bg-text {
       position: absolute;
-      bottom: -20px;
-      left: 50%;
+      bottom: -20px; left: 50%;
       transform: translateX(-50%);
       font-family: 'Playfair Display', serif;
       font-size: clamp(80px, 20vw, 200px);
@@ -640,441 +690,562 @@
       user-select: none;
       animation: drift 12s ease-in-out infinite alternate;
     }
-
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
-
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes drift {
       from { transform: translateX(-50%) translateY(0px); }
       to   { transform: translateX(-50%) translateY(-12px); }
     }
 
+    /* =====================================================
+       SECTION 13: SCROLLBAR
+    ===================================================== */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); }
+
   </style>
 </head>
-
 <body>
 
-<!-- ── INTRO ── -->
-<div class="intro" id="intro">
-  <div class="intro-bg">
-    <div class="intro-bg-text">The Bronx</div>
+  <!-- =====================================================
+       INTRO SCREEN
+       Edit the three h2 lines to change what it says
+  ===================================================== -->
+  <div class="intro" id="intro">
+    <div class="intro-bg"><div class="intro-bg-text">The Bronx</div></div>
+    <button class="intro-skip" id="introSkip">Skip →</button>
+    <div class="intro-inner">
+      <div class="intro-kicker">Against the Caption · Bronx Memory Map</div>
+      <h2 class="intro-line">The Bronx has been written about</h2>
+      <h2 class="intro-line">from the <em>outside</em> for decades.</h2>
+      <h2 class="intro-line">This is from <em>within.</em></h2>
+      <p class="intro-body">
+        These are real memories from real people who grew up here, loved here,
+        left and came back here. Not a news story. Not a statistic.
+        A place, remembered by the people who lived it.
+      </p>
+      <button class="intro-enter" id="introEnter">Enter the archive →</button>
+    </div>
   </div>
-  <button class="intro-skip" id="introSkip">Skip →</button>
-  <div class="intro-inner">
-    <div class="intro-kicker">Against the Caption · Bronx Memory Map</div>
-    <h2 class="intro-line">The Bronx has been written about</h2>
-    <h2 class="intro-line">from the <em>outside</em> for decades.</h2>
-    <h2 class="intro-line">This is from <em>within.</em></h2>
-    <p class="intro-body">
-      These are real memories from real people who grew up here, loved here, left and came back here.
-      Not a news story. Not a statistic. A place, remembered by the people who lived it.
-    </p>
-    <button class="intro-enter" id="introEnter">Enter the archive →</button>
+
+  <!-- =====================================================
+       MOBILE TAB BAR (phones only)
+  ===================================================== -->
+  <div class="mobile-tabs">
+    <button class="mobile-tab" id="tabMap" onclick="switchTab('map')">🗺 Map</button>
+    <button class="mobile-tab active" id="tabList" onclick="switchTab('list')">☰ Memories</button>
   </div>
-</div>
-<div class="mobile-tabs" id="mobileTabs">
-  <button class="mobile-tab" id="tabMap" onclick="switchTab('map')">
-    <span class="tab-icon">🗺</span> Map
-  </button>
-  <button class="mobile-tab active" id="tabList" onclick="switchTab('list')">
-    <span class="tab-icon">☰</span> Memories
-  </button>
-</div>
-<div class="app">
 
-  <aside class="sidebar">
-
-    <div class="sidebar-header">
-      <div class="header-kicker">Against the Caption · Bronx Memory Map</div>
-      <h1 class="title">The Bronx <em>Remembers</em></h1>
-      <p class="subtitle">A community-rooted archive. Entries mapped with <b>approximate locations</b> to protect privacy.</p>
+  <!-- =====================================================
+       MOBILE BOTTOM SHEET
+       Slides up when a pin is tapped. Map stays visible.
+  ===================================================== -->
+  <div class="bottom-sheet" id="bottomSheet">
+    <div class="sheet-handle">
+      <div class="sheet-handle-bar"></div>
+      <button class="sheet-close" id="sheetClose">✕ Close</button>
     </div>
+    <div class="sheet-body" id="sheetBody"></div>
+  </div>
 
-    <div class="stats-bar" id="statsBar">
-      <div class="stat-block">
-        <span class="stat-num" id="statTotal">0</span>
-        <span class="stat-lbl">Memories</span>
+  <!-- =====================================================
+       MAIN APP
+  ===================================================== -->
+  <div class="app">
+
+    <aside class="sidebar">
+
+      <div class="sidebar-header">
+        <div class="header-kicker">Against the Caption · Bronx Memory Map</div>
+        <h1 class="title">The Bronx <em>Remembers</em></h1>
+        <p class="why-statement">Most stories about the Bronx are told from the outside. This archive belongs to the people who lived it.</p>
       </div>
-      <div class="stat-block">
-        <span class="stat-num" id="statNbhd">0</span>
-        <span class="stat-lbl">Neighborhoods</span>
+
+      <div class="stats-bar" id="statsBar">
+        <div class="stat-block">
+          <span class="stat-num" id="statTotal">0</span>
+          <span class="stat-lbl">Memories</span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-num" id="statNbhd">0</span>
+          <span class="stat-lbl">Neighborhoods</span>
+        </div>
+        <div class="stat-block" style="align-items:flex-end;gap:8px;">
+          <span class="stat-lbl" style="align-self:center;">By decade</span>
+          <div class="decade-spark" id="decadeSpark"></div>
+        </div>
+        <div class="stat-block" style="align-items:center;gap:7px;">
+          <span class="stat-lbl">Themes</span>
+          <div class="theme-pills" id="topTags"></div>
+        </div>
       </div>
-      <div class="stat-block" style="align-items:flex-end;gap:8px;">
-        <span class="stat-lbl" style="align-self:center;">By decade</span>
-        <div class="decade-spark" id="decadeSpark"></div>
+
+      <div class="submit-cta">
+        <a class="btn-submit" id="submitLink" href="#" target="_blank" rel="noreferrer">
+          + Add your memory to the map
+        </a>
+        <p class="submit-note">This archive grows with every submission. Your story belongs here.</p>
       </div>
-      <div class="stat-block" style="align-items:center;gap:7px;">
-        <span class="stat-lbl">Themes</span>
-        <div class="theme-pills" id="topTags"></div>
+
+      <div class="filters">
+        <div class="field" style="grid-column:1/-1;">
+          <label for="q">Search</label>
+          <input id="q" placeholder="title, neighborhood, tags, text…" />
+        </div>
+        <div class="field">
+          <label for="decade">Decade</label>
+          <select id="decade"><option value="all">All</option></select>
+        </div>
+        <div class="field">
+          <label for="hood">Neighborhood</label>
+          <select id="hood"><option value="all">All</option></select>
+        </div>
+        <div class="field">
+          <label for="tag">Tag / Theme</label>
+          <select id="tag"><option value="all">All</option></select>
+        </div>
+        <div class="field" style="display:flex;align-items:flex-end;">
+          <button class="btn-reset" id="resetBtn" type="button">Reset</button>
+        </div>
       </div>
-    </div>
 
-    <div class="top-actions">
-      <a class="btn primary" id="submitLink" href="#" target="_blank" rel="noreferrer">+ Submit a memory</a>
-      <button class="btn secondary" id="resetBtn" type="button">Reset</button>
-    </div>
+      <div class="count" id="count">0 entries</div>
+      <section class="cards" id="cards"></section>
 
-    <div class="filters">
-      <div class="field" style="grid-column:1/-1;">
-        <label for="q">Search</label>
-        <input id="q" placeholder="title, neighborhood, tags, text…" />
+    </aside>
+
+    <main class="map-wrap">
+      <div id="map"></div>
+      <div class="map-legend" id="mapLegend">
+        <div class="legend-title">Memory by decade</div>
+        <div class="legend-items" id="legendItems"></div>
       </div>
-      <div class="field">
-        <label for="decade">Decade</label>
-        <select id="decade"><option value="all">All</option></select>
-      </div>
-      <div class="field">
-        <label for="hood">Neighborhood</label>
-        <select id="hood"><option value="all">All</option></select>
-      </div>
-      <div class="field" style="grid-column:1/-1;">
-        <label for="tag">Tag / Theme</label>
-        <select id="tag"><option value="all">All</option></select>
-      </div>
-    </div>
+    </main>
 
-    <div class="count" id="count">0 entries</div>
-    <section class="cards" id="cards"></section>
+  </div>
 
-  </aside>
 
-  <main class="map-wrap">
-    <div id="map"></div>
-  </main>
+  <!-- Leaflet JS — keep this just before your script -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-</div>
+  <script>
 
-<!-- Leaflet JS — must be BEFORE your script -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    /* =====================================================
+       SECTION A: CONFIGURATION
+       Change URLs or map bounds here
+    ===================================================== */
+    const SUBMIT_URL   = "https://tally.so/r/81dD5O";
+    const BRONX_BOUNDS = [[40.785, -73.935], [40.915, -73.765]];
+    document.getElementById("submitLink").href = SUBMIT_URL;
 
-<script>
-  const submitUrl = "https://tally.so/r/81dD5O";
-  document.getElementById("submitLink").href = submitUrl;
 
-  const entries = [
-    {
-      id: "BX-0001",
-      title: "Looking out from the Bronx",
-      neighborhood: "Soundview",
-      decade: "2020s",
-      tags: ["growing-up-in-the-bronx","the-block","migration-stories"],
-      lat: 40.8200, lng: -73.8800,
-      story: `I took this photo looking out across the Bronx skyline. It's the kind of view you see when you're moving through the city, from a train, a bridge, somewhere in between places.\n\nI've spent a lot of time thinking about leaving the Bronx, coming back to it, and trying to understand what it means to carry a place with you even when you're somewhere else. This photo feels like that moment: looking out, looking back, trying to see the Bronx again.`,
-      artifact: { type:"image", url:"assets/images/bronx-skyline.jpg" },
-      contributorCredit: "Contributor submission (anonymous)"
-    },
-    {
-      id: "BX-0002",
-      title: "Francis Martin Library after school",
-      neighborhood: "Morris Heights",
-      decade: "2000s",
-      tags: ["growing-up-in-the-bronx","organizing-activism","migration-stories"],
-      lat: 40.8505, lng: -73.9135,
-      story: `On 181st and University, there is a library called the Francis Martin Library. This library is where I would go after school when I went to middle school around Andrew's Ave. I would go here to read manga and books like The Coldest Winter Ever by Sistah Souljah and Fly Girl by Omar Tyree. As a middle schooler, this library was a refuge for me and also a place to chat with people online since I didn't have WiFi at home.`,
-      contributorCredit: "Contributor submission (anonymous)",
-      soundtrack: { label:"Can't Help But Wait — Trey Songz", spotifyUrl:"https://open.spotify.com/track/5k3VjTwIsOjQ2woGz3Yx71" }
-    },
-    {
-      id: "BX-0003",
-      title: "Summers at Mema's House",
-      neighborhood: "South Bronx",
-      decade: "Early 2000s",
-      tags: ["growing-up-in-the-bronx","everyday-bronx-life","black-bronx-life"],
-      lat: 40.8185, lng: -73.8675,
-      story: `Growing up I spent summers at my grandmother's apartment and every Christmas at the foot of her tree. That apartment was a grounding home we all could return to as a family. Somehow she managed to make a two bedroom apartment in the projects feel like a mansion. An endless expanse of adventure.\n\nShe taught me to read Black literature and we watched hours of movies and TV shows, laughing until our sides hurt. My Mema and her home is the keeper of memory in my family, and it's a cherished place.`,
-      contributorCredit: "Contributor submission (Kaia)",
-      soundtrack: { label:"Never Too Much — Luther Vandross", spotifyUrl:"https://open.spotify.com/track/3nFJbZCHP4d9vduKjJLdBL" }
-    },
-    {
-      id: "BX-0004",
-      title: "Watching the trains",
-      neighborhood: "Bedford Park",
-      decade: "2020s",
-      tags: ["everyday-bronx-life","mta","summer-in-the-bronx"],
-      lat: 40.8723, lng: -73.8895,
-      story: `Growing up in the Bronx you get used to seeing trains everywhere, but sometimes you stop and really look.\n\nI took this photo looking down into the train yard near Bedford Park where all the trains sit lined up. It's one of those views where you realize how much movement is constantly happening underneath the city.\n\nI used to call it the trains' home.`,
-      artifact: { type:"image", url:"assets/images/Train-Bedford-park.jpeg" },
-      contributorCredit: "Contributor submission (anonymous)"
-    },
-    {
-      id: "BX-0005",
-      title: "House Pizza in Bedford Park",
-      neighborhood: "Bedford Park",
-      decade: "2020s",
-      tags: ["everyday-bronx-life","the-bodega","the-block"],
-      lat: 40.8700, lng: -73.8856,
-      story: `Whenever I go visit my mom in the Bronx, I almost always stop at House Pizza in Bedford Park.\n\nThe pizza is soooo cheesy and tastes like what real New York pizza is supposed to taste like. The owners are always joking around and talking with people behind the counter, so it feels like one of those neighborhood spots where everyone knows each other.`,
-      artifact: { type:"image", url:"assets/images/House-pizza.jpeg" },
-      contributorCredit: "Contributor submission (anonymous)"
+    /* =====================================================
+       SECTION B: ENTRIES DATA
+       To add a new memory, copy one block and paste it
+       before the final ]; — fill in all required fields.
+
+       Required: id, title, neighborhood, decade,
+                 tags (array), lat, lng, story
+       Optional: artifact { type:"image", url:"..." }
+                 soundtrack { label:"...", spotifyUrl:"..." }
+                 contributorCredit
+    ===================================================== */
+    const entries = [
+      {
+        id: "BX-0001",
+        title: "Looking out from the Bronx",
+        neighborhood: "Soundview",
+        decade: "2020s",
+        tags: ["growing-up-in-the-bronx","the-block","migration-stories"],
+        lat: 40.8200, lng: -73.8800,
+        story: `I took this photo looking out across the Bronx skyline. It's the kind of view you see when you're moving through the city, from a train, a bridge, somewhere in between places.\n\nI've spent a lot of time thinking about leaving the Bronx, coming back to it, and trying to understand what it means to carry a place with you even when you're somewhere else. This photo feels like that moment: looking out, looking back, trying to see the Bronx again.`,
+        artifact: { type:"image", url:"assets/images/bronx-skyline.jpg" },
+        contributorCredit: "Contributor submission (anonymous)"
+      },
+      {
+        id: "BX-0002",
+        title: "Francis Martin Library after school",
+        neighborhood: "Morris Heights",
+        decade: "2000s",
+        tags: ["growing-up-in-the-bronx","organizing-activism","migration-stories"],
+        lat: 40.8505, lng: -73.9135,
+        story: `On 181st and University, there is a library called the Francis Martin Library. This library is where I would go after school when I went to middle school around Andrew's Ave. I would go here to read manga and books like The Coldest Winter Ever by Sistah Souljah and Fly Girl by Omar Tyree. As a middle schooler, this library was a refuge for me and also a place to chat with people online since I didn't have WiFi at home.`,
+        contributorCredit: "Contributor submission (anonymous)",
+        soundtrack: { label:"Can't Help But Wait — Trey Songz", spotifyUrl:"https://open.spotify.com/track/5k3VjTwIsOjQ2woGz3Yx71" }
+      },
+      {
+        id: "BX-0003",
+        title: "Summers at Mema's House",
+        neighborhood: "South Bronx",
+        decade: "Early 2000s",
+        tags: ["growing-up-in-the-bronx","everyday-bronx-life","black-bronx-life"],
+        lat: 40.8185, lng: -73.8675,
+        story: `Growing up I spent summers at my grandmother's apartment and every Christmas at the foot of her tree. That apartment was a grounding home we all could return to as a family. Somehow she managed to make a two bedroom apartment in the projects feel like a mansion. An endless expanse of adventure.\n\nShe taught me to read Black literature and we watched hours of movies and TV shows, laughing until our sides hurt. My Mema and her home is the keeper of memory in my family, and it's a cherished place.`,
+        contributorCredit: "Contributor submission (Kaia)",
+        soundtrack: { label:"Never Too Much — Luther Vandross", spotifyUrl:"https://open.spotify.com/track/3nFJbZCHP4d9vduKjJLdBL" }
+      },
+      {
+        id: "BX-0004",
+        title: "Watching the trains",
+        neighborhood: "Bedford Park",
+        decade: "2020s",
+        tags: ["everyday-bronx-life","mta","summer-in-the-bronx"],
+        lat: 40.8723, lng: -73.8895,
+        story: `Growing up in the Bronx you get used to seeing trains everywhere, but sometimes you stop and really look.\n\nI took this photo looking down into the train yard near Bedford Park where all the trains sit lined up. It's one of those views where you realize how much movement is constantly happening underneath the city.\n\nI used to call it the trains' home.`,
+        artifact: { type:"image", url:"assets/images/Train-Bedford-park.jpeg" },
+        contributorCredit: "Contributor submission (anonymous)"
+      },
+      {
+        id: "BX-0005",
+        title: "House Pizza in Bedford Park",
+        neighborhood: "Bedford Park",
+        decade: "2020s",
+        tags: ["everyday-bronx-life","the-bodega","the-block"],
+        lat: 40.8700, lng: -73.8856,
+        story: `Whenever I go visit my mom in the Bronx, I almost always stop at House Pizza in Bedford Park.\n\nThe pizza is soooo cheesy and tastes like what real New York pizza is supposed to taste like. The owners are always joking around and talking with people behind the counter, so it feels like one of those neighborhood spots where everyone knows each other.`,
+        artifact: { type:"image", url:"assets/images/House-pizza.jpeg" },
+        contributorCredit: "Contributor submission (anonymous)"
+      }
+    ];
+
+
+    /* =====================================================
+       SECTION C: DECADE COLORS
+       Each decade = a distinct dot color on the map.
+       Add new decades here as submissions come in.
+    ===================================================== */
+    const DECADE_COLORS = {
+      "1970s":       "#6B4F8A",
+      "1980s":       "#2E86AB",
+      "1990s":       "#E07A5F",
+      "2000s":       "#D4A020",
+      "Early 2000s": "#D4A020",
+      "2010s":       "#81B29A",
+      "2020s":       "#B83227",
+    };
+    function dotColor(decade) {
+      return DECADE_COLORS[decade] || "#8B7355";
     }
-  ];
 
-  /* ── MAP ───────────────────────────────────────────── */
-  const map = L.map("map", { zoomControl: true });
-  const bronxBounds = L.latLngBounds([40.805,-73.930],[40.905,-73.805]);
-  map.setMaxBounds(bronxBounds);
-  map.options.maxBoundsViscosity = 0.9;
 
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-    maxZoom: 19,
-    attribution: '© OpenStreetMap © CARTO'
-  }).addTo(map);
+    /* =====================================================
+       SECTION D: MAP SETUP
+    ===================================================== */
+    const map = L.map("map", { zoomControl: true });
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
+      maxZoom: 19
+    }).addTo(map);
+    const markerLayer = L.layerGroup().addTo(map);
+    const markerById  = new Map();
+    const bronxBounds = L.latLngBounds(BRONX_BOUNDS);
 
-  const markerLayer = L.layerGroup().addTo(map);
-  const markerById  = new Map();
 
-  /* ── HELPERS ───────────────────────────────────────── */
-  const normalize    = s => String(s ?? "").toLowerCase().trim();
-  const escHtml      = s => String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
-  const uniqueSorted = arr => Array.from(new Set(arr.filter(Boolean))).sort((a,b) => a.localeCompare(b));
+    /* =====================================================
+       SECTION E: HELPERS
+    ===================================================== */
+    const normalize    = s => String(s ?? "").toLowerCase().trim();
+    const escHtml      = s => String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    const uniqueSorted = arr => Array.from(new Set(arr.filter(Boolean))).sort((a,b) => a.localeCompare(b));
 
-  function populateSelect(id, values) {
-    const sel = document.getElementById(id);
-    const cur = sel.value;
-    sel.innerHTML = `<option value="all">All</option>` +
-      values.map(v => `<option value="${escHtml(v)}">${escHtml(v)}</option>`).join("");
-    if ([...sel.options].some(o => o.value === cur)) sel.value = cur;
-  }
+    function populateSelect(id, values) {
+      const sel = document.getElementById(id);
+      const cur = sel.value;
+      sel.innerHTML = `<option value="all">All</option>` +
+        values.map(v => `<option value="${escHtml(v)}">${escHtml(v)}</option>`).join("");
+      if ([...sel.options].some(o => o.value === cur)) sel.value = cur;
+    }
 
-  /* ── STATS ─────────────────────────────────────────── */
-  function buildStats(list) {
-    document.getElementById("statTotal").textContent = list.length;
-    document.getElementById("statNbhd").textContent  = new Set(list.map(e => e.neighborhood)).size;
 
-    const dec = {};
-    list.forEach(e => {
-      const k = e.decade === "Early 2000s" ? "2000s" : e.decade;
-      dec[k] = (dec[k] || 0) + 1;
-    });
-    const decades = ["1980s","1990s","2000s","2010s","2020s"];
-    const maxD    = Math.max(...decades.map(d => dec[d] || 0), 1);
+    /* =====================================================
+       SECTION F: STATS BAR
+    ===================================================== */
+    function buildStats(list) {
+      document.getElementById("statTotal").textContent = list.length;
+      document.getElementById("statNbhd").textContent  = new Set(list.map(e => e.neighborhood)).size;
+      const dec = {};
+      list.forEach(e => { const k = e.decade === "Early 2000s" ? "2000s" : e.decade; dec[k] = (dec[k]||0)+1; });
+      const decades = ["1980s","1990s","2000s","2010s","2020s"];
+      const maxD = Math.max(...decades.map(d => dec[d]||0), 1);
+      document.getElementById("decadeSpark").innerHTML = decades.map(d => {
+        const cnt = dec[d]||0;
+        const h = Math.max((cnt/maxD)*18, 2);
+        return `<div class="dec-col"><div class="dec-bar" style="height:${h}px" title="${d}: ${cnt}"></div><div class="dec-tick">${d.slice(2,4)}</div></div>`;
+      }).join("");
+      const tagCounts = {};
+      list.forEach(e => (e.tags||[]).forEach(t => tagCounts[t] = (tagCounts[t]||0)+1));
+      const top4 = Object.entries(tagCounts).sort((a,b) => b[1]-a[1]).slice(0,4);
+      document.getElementById("topTags").innerHTML = top4.map(([tag]) =>
+        `<span class="theme-pill" data-tag="${escHtml(tag)}">${escHtml(tag)}</span>`
+      ).join("");
+      document.querySelectorAll(".theme-pill").forEach(p =>
+        p.addEventListener("click", () => { document.getElementById("tag").value = p.dataset.tag; applyFilters(); })
+      );
+    }
 
-    document.getElementById("decadeSpark").innerHTML = decades.map(d => {
-      const cnt = dec[d] || 0;
-      const h   = Math.max((cnt / maxD) * 18, 2);
-      return `<div class="dec-col"><div class="dec-bar" style="height:${h}px" title="${d}: ${cnt}"></div><div class="dec-tick">${d.slice(2,4)}</div></div>`;
-    }).join("");
 
-    const tagCounts = {};
-    list.forEach(e => (e.tags||[]).forEach(t => tagCounts[t] = (tagCounts[t]||0) + 1));
-    const top4 = Object.entries(tagCounts).sort((a,b) => b[1]-a[1]).slice(0,4);
-    document.getElementById("topTags").innerHTML = top4.map(([tag]) =>
-      `<span class="theme-pill" data-tag="${escHtml(tag)}">${escHtml(tag)}</span>`
-    ).join("");
-    document.querySelectorAll(".theme-pill").forEach(p =>
-      p.addEventListener("click", () => {
-        document.getElementById("tag").value = p.dataset.tag;
-        applyFilters();
-      })
-    );
-  }
+    /* =====================================================
+       SECTION G: MAP LEGEND
+    ===================================================== */
+    function buildLegend(list) {
+      const decades = [...new Set(list.map(e => e.decade))].sort();
+      document.getElementById("legendItems").innerHTML = decades.map(d =>
+        `<div class="legend-item"><div class="legend-dot" style="background:${dotColor(d)}"></div><span>${d}</span></div>`
+      ).join("");
+    }
 
-  /* ── POPUP ─────────────────────────────────────────── */
-  function popupHtml(e) {
-    const chips = (e.tags||[]).map(t => `<span class="chip">${escHtml(t)}</span>`).join("");
-    const mediaHtml = e.artifact?.type === "image" && e.artifact.url ? `
-      <div class="media">
-        <img src="${escHtml(e.artifact.url)}" alt="memory image"/>
-        ${e.artifact.credit ? `<div class="small">${escHtml(e.artifact.credit)}</div>` : ""}
-      </div>` : "";
-    const soundtrackHtml = e.soundtrack?.spotifyUrl ? (() => {
-      const trackId = e.soundtrack.spotifyUrl.match(/track\/([a-zA-Z0-9]+)/)?.[1];
+
+    /* =====================================================
+       SECTION H: SPOTIFY EMBED HELPER
+       Extracts track ID and returns an iframe player
+    ===================================================== */
+    function spotifyEmbed(spotifyUrl) {
+      const trackId = spotifyUrl.match(/track\/([a-zA-Z0-9]+)/)?.[1];
       if (!trackId) return "";
-      return `
-        <div class="soundtrack">
-          <div class="label">♪ Memory Soundtrack</div>
-          <iframe
-            src="https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0"
-            width="100%"
-            height="80"
-            frameborder="0"
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            loading="lazy"
-            style="border-radius:10px;margin-top:6px;display:block;"
-          ></iframe>
-        </div>`;
-    })() : "";
-    return `
-      <div class="popup-inner">
-        <div class="popup">
-          <div class="archive-label">Against the Caption · Bronx Memory Map</div>
-          <h2>${escHtml(e.title)}</h2>
-          <div class="pmeta">
-            <span class="chip">${escHtml(e.neighborhood)}</span>
-            <span class="chip">${escHtml(e.decade)}</span>
-            ${chips}
-          </div>
-          <p>${escHtml(e.story)}</p>
-          ${mediaHtml}
-          ${soundtrackHtml}
-          ${e.contributorCredit ? `<div class="small">${escHtml(e.contributorCredit)}</div>` : ""}
-        </div>
-      </div>`;
-  }
-
-  /* ── MARKERS ───────────────────────────────────────── */
-  function renderMarkers(list) {
-    markerLayer.clearLayers();
-    markerById.clear();
-    list.forEach(e => {
-      const icon = L.divIcon({
-        className: "",
-        html: `<div style="width:14px;height:14px;background:#B83227;border:2px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.35);cursor:pointer;"></div>`,
-        iconSize: [14,14], iconAnchor: [7,7]
-      });
-      const isMobile = window.matchMedia("(max-width:980px)").matches;
-      const m = L.marker([e.lat, e.lng], { icon }).addTo(markerLayer);
-      m.bindPopup(popupHtml(e), {
-        maxWidth: 316,
-        autoPan: true,
-        autoPanPaddingTopLeft:     isMobile ? [14,20] : [420,24],
-        autoPanPaddingBottomRight: isMobile ? [14,24] : [24,24]
-      });
-      markerById.set(e.id, m);
-    });
-  }
-
-  /* ── CARDS ─────────────────────────────────────────── */
-  function renderCards(list) {
-    const cards = document.getElementById("cards");
-    document.getElementById("count").innerHTML = `<strong>${list.length}</strong> entr${list.length===1?"y":"ies"}`;
-
-    if (list.length === 0) {
-      cards.innerHTML = `<div class="empty-state">No entries match — try adjusting the filters.</div>`;
-      return;
+      return `<iframe src="https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0"
+        width="100%" height="80" frameborder="0"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy" style="border-radius:10px;margin-top:6px;display:block;"></iframe>`;
     }
 
-    cards.innerHTML = list.map(e => `
-      <article class="card" data-id="${escHtml(e.id)}">
-        <div class="card-meta">
-          <span class="card-neighborhood">${escHtml(e.neighborhood)}</span>
-          ${e.soundtrack ? '<span class="card-music">♪</span>' : ''}
-        </div>
-        <h3>${escHtml(e.title)}</h3>
-        <div class="card-excerpt">${escHtml(e.story.slice(0,100))}…</div>
-        <div class="meta">
-          <span class="chip decade">${escHtml(e.decade)}</span>
-          ${(e.tags||[]).slice(0,2).map(t=>`<span class="chip">${escHtml(t)}</span>`).join("")}
-        </div>
-      </article>`).join("");
 
-    cards.querySelectorAll(".card").forEach(card => {
-      card.addEventListener("click", () => {
-        cards.querySelectorAll(".card").forEach(c => c.classList.remove("active"));
-        card.classList.add("active");
-        const id = card.getAttribute("data-id");
-        const m  = markerById.get(id);
-        if (!m) return;
+    /* =====================================================
+       SECTION I: DESKTOP POPUP HTML
+    ===================================================== */
+    function popupHtml(e) {
+      const chips = (e.tags||[]).map(t => `<span class="chip">${escHtml(t)}</span>`).join("");
+      const mediaHtml = e.artifact?.type === "image" && e.artifact.url
+        ? `<div class="media"><img src="${escHtml(e.artifact.url)}" alt=""/></div>` : "";
+      const soundtrackHtml = e.soundtrack?.spotifyUrl
+        ? `<div class="soundtrack"><div class="label">♪ Memory Soundtrack</div>${spotifyEmbed(e.soundtrack.spotifyUrl)}</div>` : "";
+      return `<div class="popup-inner"><div class="popup">
+        <div class="archive-label">Against the Caption · Bronx Memory Map</div>
+        <h2>${escHtml(e.title)}</h2>
+        <div class="pmeta"><span class="chip">${escHtml(e.neighborhood)}</span><span class="chip">${escHtml(e.decade)}</span>${chips}</div>
+        <p>${escHtml(e.story)}</p>
+        ${mediaHtml}${soundtrackHtml}
+        ${e.contributorCredit ? `<div class="small">${escHtml(e.contributorCredit)}</div>` : ""}
+      </div></div>`;
+    }
+
+
+    /* =====================================================
+       SECTION J: MOBILE BOTTOM SHEET
+       Opens a slide-up sheet with the full memory.
+       Map stays visible above it.
+    ===================================================== */
+    function openSheet(entry) {
+      const tags = (entry.tags||[]).map(t => `<span class="chip">${escHtml(t)}</span>`).join("");
+      const imgHtml = entry.artifact?.type === "image" && entry.artifact.url
+        ? `<img class="sheet-img" src="${escHtml(entry.artifact.url)}" alt=""/>` : "";
+      const soundtrackHtml = entry.soundtrack?.spotifyUrl
+        ? `<div class="sheet-soundtrack"><div class="sheet-soundtrack-label">♪ Memory Soundtrack</div>${spotifyEmbed(entry.soundtrack.spotifyUrl)}</div>` : "";
+
+      document.getElementById("sheetBody").innerHTML = `
+        <div class="sheet-kicker">${escHtml(entry.neighborhood)} · ${escHtml(entry.decade)}</div>
+        <div class="sheet-title">${escHtml(entry.title)}</div>
+        <div class="sheet-tags">${tags}</div>
+        ${imgHtml}
+        <p class="sheet-story">${escHtml(entry.story)}</p>
+        ${soundtrackHtml}
+        ${entry.contributorCredit ? `<div class="sheet-attrib">${escHtml(entry.contributorCredit)}</div>` : ""}
+      `;
+      document.getElementById("bottomSheet").classList.add("open");
+    }
+
+    function closeSheet() {
+      document.getElementById("bottomSheet").classList.remove("open");
+      document.querySelectorAll(".card").forEach(c => c.classList.remove("active"));
+    }
+
+    document.getElementById("sheetClose").addEventListener("click", closeSheet);
+
+
+    /* =====================================================
+       SECTION K: MARKERS
+       Colored dots on the map. Color = decade (Section C).
+       Desktop → popup. Mobile → bottom sheet.
+    ===================================================== */
+    function renderMarkers(list) {
+      markerLayer.clearLayers();
+      markerById.clear();
+      list.forEach(e => {
+        const color = dotColor(e.decade);
+        const icon  = L.divIcon({
+          className: "",
+          html: `<div style="width:14px;height:14px;background:${color};border:2px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.35);cursor:pointer;transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.4)'" onmouseout="this.style.transform='scale(1)'"></div>`,
+          iconSize: [14,14], iconAnchor: [7,7]
+        });
         const isMobile = window.matchMedia("(max-width:980px)").matches;
-        if (isMobile) switchTab("map");
-        map.flyTo(m.getLatLng(), isMobile ? 14 : 14, { animate:true, duration:0.6 });
-        map.once("moveend", () => {
-          m.openPopup();
-          if (!isMobile) setTimeout(() => map.panInside(m.getLatLng(), {
-            paddingTopLeft: [420,120], paddingBottomRight: [24,24]
-          }), 50);
+        const m = L.marker([e.lat, e.lng], { icon }).addTo(markerLayer);
+        if (isMobile) {
+          m.on("click", () => {
+            document.querySelectorAll(".card").forEach(c => c.classList.toggle("active", c.getAttribute("data-id") === e.id));
+            openSheet(e);
+          });
+        } else {
+          m.bindPopup(popupHtml(e), { maxWidth:316, autoPan:true, autoPanPaddingTopLeft:[420,24], autoPanPaddingBottomRight:[24,24] });
+        }
+        markerById.set(e.id, m);
+      });
+    }
+
+
+    /* =====================================================
+       SECTION L: MEMORY CARDS
+       Clicking a card → flies map to pin.
+       On mobile → also opens the bottom sheet.
+    ===================================================== */
+    function renderCards(list) {
+      const cards = document.getElementById("cards");
+      document.getElementById("count").innerHTML = `<strong>${list.length}</strong> entr${list.length===1?"y":"ies"}`;
+      if (list.length === 0) {
+        cards.innerHTML = `<div class="empty-state">No entries match — try adjusting the filters.</div>`;
+        return;
+      }
+      cards.innerHTML = list.map(e => `
+        <article class="card" data-id="${escHtml(e.id)}">
+          <div class="card-meta">
+            <span class="card-neighborhood">${escHtml(e.neighborhood)}</span>
+            ${e.soundtrack ? '<span class="card-music">♪</span>' : ''}
+          </div>
+          <h3>${escHtml(e.title)}</h3>
+          <div class="card-excerpt">${escHtml(e.story.slice(0,100))}…</div>
+          <div class="meta">
+            <span class="chip decade" style="background:${dotColor(e.decade)}">${escHtml(e.decade)}</span>
+            ${(e.tags||[]).slice(0,2).map(t=>`<span class="chip">${escHtml(t)}</span>`).join("")}
+          </div>
+        </article>`).join("");
+
+      cards.querySelectorAll(".card").forEach(card => {
+        card.addEventListener("click", () => {
+          cards.querySelectorAll(".card").forEach(c => c.classList.remove("active"));
+          card.classList.add("active");
+          const id    = card.getAttribute("data-id");
+          const m     = markerById.get(id);
+          const entry = entries.find(e => e.id === id);
+          if (!m) return;
+          const isMobile = window.matchMedia("(max-width:980px)").matches;
+          if (isMobile) {
+            switchTab("map");
+            setTimeout(() => {
+              map.flyTo(m.getLatLng(), 15, { animate:true, duration:0.6 });
+              map.once("moveend", () => { if (entry) openSheet(entry); });
+            }, 100);
+          } else {
+            map.flyTo(m.getLatLng(), 14, { animate:true, duration:0.6 });
+            map.once("moveend", () => {
+              m.openPopup();
+              setTimeout(() => map.panInside(m.getLatLng(), { paddingTopLeft:[420,120], paddingBottomRight:[24,24] }), 50);
+            });
+          }
         });
       });
-    });
-  }
-
-  /* ── FILTERING ─────────────────────────────────────── */
-  function applyFilters() {
-    const q      = normalize(document.getElementById("q").value);
-    const decade = document.getElementById("decade").value;
-    const hood   = document.getElementById("hood").value;
-    const tag    = document.getElementById("tag").value;
-
-    const filtered = entries.filter(e => {
-      if (decade !== "all" && e.decade !== decade) return false;
-      if (hood   !== "all" && e.neighborhood !== hood) return false;
-      if (tag    !== "all" && !(e.tags||[]).includes(tag)) return false;
-      if (q) {
-        const hay = [e.title, e.neighborhood, e.decade, (e.tags||[]).join(" "), e.story].join(" ");
-        if (!normalize(hay).includes(q)) return false;
-      }
-      return true;
-    });
-
-    renderMarkers(filtered);
-    renderCards(filtered);
-    buildStats(filtered);
-  }
-
-  /* ── MOBILE TABS ────────────────────────────────────── */
-  function switchTab(tab) {
-    const sidebar = document.querySelector(".sidebar");
-    const tabMap  = document.getElementById("tabMap");
-    const tabList = document.getElementById("tabList");
-    if (tab === "map") {
-      sidebar.classList.add("map-active");
-      tabMap.classList.add("active");
-      tabList.classList.remove("active");
-      setTimeout(() => map.invalidateSize(), 50);
-    } else {
-      sidebar.classList.remove("map-active");
-      tabList.classList.add("active");
-      tabMap.classList.remove("active");
     }
-  }
 
-  /* ── INTRO ─────────────────────────────────────────── */
-  function dismissIntro() {
-    const intro = document.getElementById("intro");
-    intro.classList.add("fade-out");
-    // restore leaflet attribution
-    document.querySelectorAll(".leaflet-control-attribution").forEach(el => {
-      el.style.opacity = "1";
-      el.style.pointerEvents = "auto";
-    });
-    setTimeout(() => intro.style.display = "none", 800);
-  }
 
-  // hide attribution while intro shows (fallback for older iOS)
-  document.querySelectorAll(".leaflet-control-attribution").forEach(el => {
-    el.style.opacity = "0";
-    el.style.pointerEvents = "none";
-  });
-  document.getElementById("introEnter").addEventListener("click", dismissIntro);
-  document.getElementById("introSkip").addEventListener("click", dismissIntro);
-
-  /* ── INIT ──────────────────────────────────────────── */
-  function init() {
-    populateSelect("decade", uniqueSorted(entries.map(e => e.decade)));
-    populateSelect("hood",   uniqueSorted(entries.map(e => e.neighborhood)));
-    populateSelect("tag",    uniqueSorted(entries.flatMap(e => e.tags||[])));
-
-    renderMarkers(entries);
-    renderCards(entries);
-    buildStats(entries);
-
-    const isMobile = window.matchMedia("(max-width:980px)").matches;
-    map.fitBounds(bronxBounds, { padding: isMobile ? [10,10] : [24,24], maxZoom: isMobile ? 11 : 13 });
-
-    ["q","decade","hood","tag"].forEach(id => {
-      document.getElementById(id).addEventListener("input",  applyFilters);
-      document.getElementById(id).addEventListener("change", applyFilters);
-    });
-
-    document.getElementById("resetBtn").addEventListener("click", () => {
-      ["q","decade","hood","tag"].forEach(id => {
-        const el = document.getElementById(id);
-        el.value = el.tagName === "INPUT" ? "" : "all";
+    /* =====================================================
+       SECTION M: FILTERING
+       Runs every time a search/filter input changes
+    ===================================================== */
+    function applyFilters() {
+      const q      = normalize(document.getElementById("q").value);
+      const decade = document.getElementById("decade").value;
+      const hood   = document.getElementById("hood").value;
+      const tag    = document.getElementById("tag").value;
+      const filtered = entries.filter(e => {
+        if (decade !== "all" && e.decade !== decade) return false;
+        if (hood   !== "all" && e.neighborhood !== hood) return false;
+        if (tag    !== "all" && !(e.tags||[]).includes(tag)) return false;
+        if (q) {
+          const hay = [e.title, e.neighborhood, e.decade, (e.tags||[]).join(" "), e.story].join(" ");
+          if (!normalize(hay).includes(q)) return false;
+        }
+        return true;
       });
-      applyFilters();
-      map.fitBounds(bronxBounds, { padding: isMobile ? [10,10] : [24,24], maxZoom: isMobile ? 11 : 13 });
-    });
-  }
+      renderMarkers(filtered);
+      renderCards(filtered);
+      buildStats(filtered);
+      buildLegend(filtered);
+      closeSheet();
+    }
 
-  init();
-</script>
+
+    /* =====================================================
+       SECTION N: MOBILE TAB SWITCHING
+    ===================================================== */
+    function switchTab(tab) {
+      const sidebar = document.querySelector(".sidebar");
+      const tabMap  = document.getElementById("tabMap");
+      const tabList = document.getElementById("tabList");
+      if (tab === "map") {
+        sidebar.classList.add("map-active");
+        tabMap.classList.add("active");
+        tabList.classList.remove("active");
+        setTimeout(() => map.invalidateSize(), 50);
+      } else {
+        sidebar.classList.remove("map-active");
+        tabList.classList.add("active");
+        tabMap.classList.remove("active");
+        closeSheet();
+      }
+    }
+
+
+    /* =====================================================
+       SECTION O: INTRO SCREEN
+    ===================================================== */
+    function dismissIntro() {
+      const intro = document.getElementById("intro");
+      intro.classList.add("fade-out");
+      document.querySelectorAll(".leaflet-control-attribution").forEach(el => {
+        el.style.opacity = "1";
+        el.style.pointerEvents = "auto";
+      });
+      setTimeout(() => intro.style.display = "none", 800);
+    }
+    // Hide attribution while intro is showing
+    document.querySelectorAll(".leaflet-control-attribution").forEach(el => {
+      el.style.opacity = "0"; el.style.pointerEvents = "none";
+    });
+    document.getElementById("introEnter").addEventListener("click", dismissIntro);
+    document.getElementById("introSkip").addEventListener("click", dismissIntro);
+
+
+    /* =====================================================
+       SECTION P: INIT — runs once on page load
+    ===================================================== */
+    function init() {
+      populateSelect("decade", uniqueSorted(entries.map(e => e.decade)));
+      populateSelect("hood",   uniqueSorted(entries.map(e => e.neighborhood)));
+      populateSelect("tag",    uniqueSorted(entries.flatMap(e => e.tags||[])));
+      renderMarkers(entries);
+      renderCards(entries);
+      buildStats(entries);
+      buildLegend(entries);
+      const isMobile = window.matchMedia("(max-width:980px)").matches;
+      map.fitBounds(bronxBounds, { padding: isMobile ? [10,10] : [24,24], maxZoom: isMobile ? 11 : 13 });
+      ["q","decade","hood","tag"].forEach(id => {
+        document.getElementById(id).addEventListener("input",  applyFilters);
+        document.getElementById(id).addEventListener("change", applyFilters);
+      });
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        ["q","decade","hood","tag"].forEach(id => {
+          const el = document.getElementById(id);
+          el.value = el.tagName === "INPUT" ? "" : "all";
+        });
+        applyFilters();
+        map.fitBounds(bronxBounds, { padding: isMobile ? [10,10] : [24,24], maxZoom: isMobile ? 11 : 13 });
+      });
+    }
+
+    init();
+
+  </script>
 </body>
 </html>
