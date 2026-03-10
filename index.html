@@ -429,23 +429,38 @@
     @media (max-width: 980px) {
       .app {
         grid-template-columns: 1fr;
-        grid-template-rows: 52dvh 48dvh;
+        grid-template-rows: 45dvh 55dvh;
         height: 100dvh;
       }
-      .map-wrap { order: 1; height: 52dvh; min-height: 52dvh; }
-      #map { height: 52dvh; min-height: 52dvh; }
+      .map-wrap { order: 1; height: 45dvh; min-height: 45dvh; }
+      #map { height: 45dvh; min-height: 45dvh; }
       .sidebar {
         order: 2;
-        height: 48dvh;
+        height: 55dvh;
         overflow-y: auto;
         border-right: none;
         border-top: 2px solid var(--border);
       }
       .filters { grid-template-columns: 1fr; }
       .stats-bar { display: none; }
+      .sidebar-header { padding: 8px 14px 6px; }
+      .title { font-size: 17px; }
+      .top-actions { padding: 7px 14px; }
+      .filters { padding: 8px 14px; gap: 6px; }
+      .count { padding: 5px 14px; }
+      .cards { padding: 6px 10px; }
       .leaflet-popup-content { width: min(82vw, 270px) !important; max-height: 34dvh !important; }
+      /* Push Leaflet attribution so it doesn't overlap intro */
+      .leaflet-control-attribution { font-size: 8px !important; }
     }
-    /* ── INTRO SCREEN ─────────────────────────────────── */
+    /* Hide leaflet attribution behind intro */
+    .leaflet-control-attribution {
+      transition: opacity 0.5s;
+    }
+    body:has(#intro:not(.fade-out)) .leaflet-control-attribution {
+      opacity: 0;
+      pointer-events: none;
+    }
     .intro {
       position: fixed;
       inset: 0;
@@ -935,8 +950,19 @@
   function dismissIntro() {
     const intro = document.getElementById("intro");
     intro.classList.add("fade-out");
+    // restore leaflet attribution
+    document.querySelectorAll(".leaflet-control-attribution").forEach(el => {
+      el.style.opacity = "1";
+      el.style.pointerEvents = "auto";
+    });
     setTimeout(() => intro.style.display = "none", 800);
   }
+
+  // hide attribution while intro shows (fallback for older iOS)
+  document.querySelectorAll(".leaflet-control-attribution").forEach(el => {
+    el.style.opacity = "0";
+    el.style.pointerEvents = "none";
+  });
   document.getElementById("introEnter").addEventListener("click", dismissIntro);
   document.getElementById("introSkip").addEventListener("click", dismissIntro);
 
