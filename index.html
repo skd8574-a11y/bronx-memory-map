@@ -429,30 +429,84 @@
     @media (max-width: 980px) {
       .app {
         grid-template-columns: 1fr;
-        grid-template-rows: 45dvh 55dvh;
+        grid-template-rows: 1fr;
         height: 100dvh;
+        position: relative;
       }
-      .map-wrap { order: 1; height: 45dvh; min-height: 45dvh; }
-      #map { height: 45dvh; min-height: 45dvh; }
+
+      /* Both panels fill full height, map shown by default */
+      .map-wrap {
+        position: absolute;
+        inset: 0;
+        top: 48px; /* below tab bar */
+        height: calc(100dvh - 48px);
+        display: block;
+        z-index: 1;
+      }
+      #map { height: 100%; min-height: unset; }
+
       .sidebar {
-        order: 2;
-        height: 55dvh;
+        position: absolute;
+        inset: 0;
+        top: 48px;
+        height: calc(100dvh - 48px);
         overflow-y: auto;
         border-right: none;
-        border-top: 2px solid var(--border);
+        border-top: none;
+        z-index: 2;
+        display: flex; /* visible by default on mobile */
       }
-      .filters { grid-template-columns: 1fr; }
-      .stats-bar { display: none; }
+
+      .sidebar.map-active { display: none; }
+
+      /* Compact header on mobile */
       .sidebar-header { padding: 8px 14px 6px; }
       .title { font-size: 17px; }
+      .subtitle { display: none; }
       .top-actions { padding: 7px 14px; }
-      .filters { padding: 8px 14px; gap: 6px; }
+      .filters { padding: 8px 14px; gap: 6px; grid-template-columns: 1fr 1fr; }
       .count { padding: 5px 14px; }
       .cards { padding: 6px 10px; }
-      .leaflet-popup-content { width: min(82vw, 270px) !important; max-height: 34dvh !important; }
-      /* Push Leaflet attribution so it doesn't overlap intro */
+      .stats-bar { display: none; }
+
+      /* Mobile tab bar at top */
+      .mobile-tabs {
+        display: flex;
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: 48px;
+        background: var(--ink);
+        border-bottom: 2px solid var(--rust);
+        z-index: 1000;
+      }
+
+      .mobile-tab {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #7A6A50;
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: color 0.15s;
+        border-right: 1px solid #2A2010;
+      }
+      .mobile-tab:last-child { border-right: none; }
+      .mobile-tab.active { color: var(--gold); }
+      .mobile-tab .tab-icon { font-size: 14px; }
+
+      .leaflet-popup-content { width: min(82vw, 270px) !important; max-height: 50dvh !important; }
       .leaflet-control-attribution { font-size: 8px !important; }
     }
+
+    /* Hide tab bar on desktop */
+    .mobile-tabs { display: none; }
     /* Hide leaflet attribution behind intro */
     .leaflet-control-attribution {
       transition: opacity 0.5s;
@@ -624,6 +678,14 @@
     </p>
     <button class="intro-enter" id="introEnter">Enter the archive →</button>
   </div>
+</div>
+<div class="mobile-tabs" id="mobileTabs">
+  <button class="mobile-tab" id="tabMap" onclick="switchTab('map')">
+    <span class="tab-icon">🗺</span> Map
+  </button>
+  <button class="mobile-tab active" id="tabList" onclick="switchTab('list')">
+    <span class="tab-icon">☰</span> Memories
+  </button>
 </div>
 <div class="app">
 
@@ -912,7 +974,8 @@
         const m  = markerById.get(id);
         if (!m) return;
         const isMobile = window.matchMedia("(max-width:980px)").matches;
-        map.flyTo(m.getLatLng(), isMobile ? 13 : 14, { animate:true, duration:0.6 });
+        if (isMobile) switchTab("map");
+        map.flyTo(m.getLatLng(), isMobile ? 14 : 14, { animate:true, duration:0.6 });
         map.once("moveend", () => {
           m.openPopup();
           if (!isMobile) setTimeout(() => map.panInside(m.getLatLng(), {
@@ -944,6 +1007,23 @@
     renderMarkers(filtered);
     renderCards(filtered);
     buildStats(filtered);
+  }
+
+  /* ── MOBILE TABS ────────────────────────────────────── */
+  function switchTab(tab) {
+    const sidebar = document.querySelector(".sidebar");
+    const tabMap  = document.getElementById("tabMap");
+    const tabList = document.getElementById("tabList");
+    if (tab === "map") {
+      sidebar.classList.add("map-active");
+      tabMap.classList.add("active");
+      tabList.classList.remove("active");
+      setTimeout(() => map.invalidateSize(), 50);
+    } else {
+      sidebar.classList.remove("map-active");
+      tabList.classList.add("active");
+      tabMap.classList.remove("active");
+    }
   }
 
   /* ── INTRO ─────────────────────────────────────────── */
