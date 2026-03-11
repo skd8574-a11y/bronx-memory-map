@@ -642,7 +642,7 @@
     ===================================================== */
     .bottom-sheet { display: none; } /* desktop: hidden */
 
-    @media (max-width: 980px) {
+    @media (max-width: 700px) {
       .bottom-sheet {
         display: block;
         position: fixed;
@@ -721,7 +721,7 @@
     ===================================================== */
     .mobile-tabs { display: none; }
 
-    @media (max-width: 980px) {
+    @media (max-width: 700px) {
       /* Stack everything */
       .app {
         display: block;
@@ -1374,7 +1374,7 @@
 
         // Always check isMobile at click time, not render time
         m.on("click", () => {
-          const isMobile = window.matchMedia("(max-width:980px)").matches;
+          const isMobile = window.matchMedia("(max-width:700px)").matches;
           document.querySelectorAll(".card").forEach(c =>
             c.classList.toggle("active", c.getAttribute("data-id") === e.id)
           );
@@ -1448,7 +1448,7 @@
           const m     = markerById.get(id);
           const entry = entries.find(e => e.id === id);
           if (!m) return;
-          const isMobile = window.matchMedia("(max-width:980px)").matches;
+          const isMobile = window.matchMedia("(max-width:700px)").matches;
           if (isMobile) {
             // Open bottom sheet over the sidebar — don't switch to map tab
             if (entry) openSheet(entry);
@@ -1531,7 +1531,7 @@
        Uses direct style changes — simpler and more reliable
     ===================================================== */
     function switchTab(tab) {
-      const isMobile = window.matchMedia("(max-width:980px)").matches;
+      const isMobile = window.matchMedia("(max-width:700px)").matches;
       if (!isMobile) return;
 
       const sidebar  = document.querySelector(".sidebar");
@@ -1587,7 +1587,7 @@
       buildStats(entries);
       buildLegend(entries);
       buildPatterns(entries);
-      const isMobile = window.matchMedia("(max-width:980px)").matches;
+      const isMobile = window.matchMedia("(max-width:700px)").matches;
       map.fitBounds(bronxBounds, { padding: isMobile ? [10,10] : [24,24], maxZoom: isMobile ? 11 : 13 });
       ["q","decade","hood","tag"].forEach(id => {
         document.getElementById(id).addEventListener("input",  applyFilters);
