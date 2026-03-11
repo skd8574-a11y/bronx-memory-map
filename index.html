@@ -1367,25 +1367,26 @@
         const color = dotColor(e.decade);
         const icon  = L.divIcon({
           className: "",
-          html: `<div style="width:14px;height:14px;background:${color};border:2px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.35);cursor:pointer;transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.4)'" onmouseout="this.style.transform='scale(1)'"></div>`,
+          html: `<div style="width:14px;height:14px;background:${color};border:2px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.35);cursor:pointer;transition:transform 0.15s;pointer-events:none;"></div>`,
           iconSize: [14,14], iconAnchor: [7,7]
         });
         const m = L.marker([e.lat, e.lng], { icon }).addTo(markerLayer);
 
-        // Always check isMobile at click time, not render time
         m.on("click", () => {
           const isMobile = window.matchMedia("(max-width:700px)").matches;
-          document.querySelectorAll(".card").forEach(c =>
-            c.classList.toggle("active", c.getAttribute("data-id") === e.id)
-          );
-          if (isMobile) {
+          // Find and click the matching card — reuses all card click logic
+          const matchCard = document.querySelector(`.card[data-id="${e.id}"]`);
+          if (matchCard) {
+            matchCard.click();
+            matchCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          } else if (isMobile) {
             openSheet(e);
           } else {
+            m.setPopupContent(popupHtml(e));
             m.openPopup();
           }
         });
 
-        // Desktop popup still bound for autoPan
         m.bindPopup(popupHtml(e), {
           maxWidth: 316,
           autoPan: true,
