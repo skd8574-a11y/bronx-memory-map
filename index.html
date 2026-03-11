@@ -539,6 +539,78 @@
 
 
     /* =====================================================
+       SECTION 9b: SIDEBAR DETAIL PANEL (desktop)
+       Expands inside the sidebar when a card is clicked.
+       No floating popup — stays in context.
+    ===================================================== */
+    #sidebarDetail {
+      display: none;
+      background: var(--ink);
+      border-top: 2px solid var(--rust);
+      border-bottom: 2px solid var(--rust);
+      padding: 16px;
+      margin: 0;
+    }
+    #sidebarDetail.open { display: block; }
+    #sidebarDetail .sd-kicker {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 4px;
+    }
+    #sidebarDetail .sd-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+      margin: 4px 0 10px;
+    }
+    #sidebarDetail .sd-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+    #sidebarDetail .sd-tags .chip { background: rgba(255,255,255,0.08); border-color: #444; color: #ccc; }
+    #sidebarDetail .sd-img { max-width: 100%; max-height: 200px; width: auto; border-radius: 8px; display: block; margin-bottom: 12px; }
+    #sidebarDetail .sd-story {
+      font-family: 'IBM Plex Sans', sans-serif;
+      color: #ddd;
+      font-size: 13px;
+      line-height: 1.7;
+      margin: 0 0 10px;
+      white-space: pre-wrap;
+    }
+    #sidebarDetail .sd-attrib {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: #666;
+      margin-top: 8px;
+      font-style: italic;
+    }
+    #sidebarDetail .sd-close {
+      display: block;
+      margin-top: 12px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      text-transform: uppercase;
+    }
+    #sidebarDetail .sd-close:hover { color: var(--rust); }
+    #sidebarDetail .sd-soundtrack { margin-top: 12px; padding-top: 10px; border-top: 1px solid #333; }
+    #sidebarDetail .sd-soundtrack-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-bottom: 6px;
+    }
+
+    /* =====================================================
        SECTION 10: MOBILE — BOTTOM SHEET
        Slides up from the bottom when a pin is tapped.
        Map stays visible above it. Much better than a
@@ -923,6 +995,7 @@
       </div>
 
       <div class="count" id="count">0 entries</div>
+      <div id="sidebarDetail"></div>
       <section class="cards" id="cards"></section>
 
     </aside>
@@ -1351,6 +1424,40 @@
               setTimeout(() => map.panInside(m.getLatLng(), { paddingTopLeft:[420,120], paddingBottomRight:[24,24] }), 50);
             });
           }
+        });
+      });
+    }
+
+
+    /* =====================================================
+       SECTION L2: SIDEBAR DETAIL PANEL (desktop)
+    ===================================================== */
+    function openSidebarDetail(entry) {
+      const panel = document.getElementById("sidebarDetail");
+      const tags = (entry.tags||[]).map(t => `<span class="chip">${escHtml(t)}</span>`).join("");
+      const imgHtml = entry.artifact?.type === "image" && entry.artifact.url
+        ? `<img class="sd-img" src="${escHtml(entry.artifact.url)}" alt=""/>` : "";
+      const soundtrackHtml = entry.soundtrack?.spotifyUrl
+        ? `<div class="sd-soundtrack"><div class="sd-soundtrack-label">♪ Memory Soundtrack</div>${spotifyEmbed(entry.soundtrack.spotifyUrl)}</div>` : "";
+      panel.innerHTML = `
+        <div class="sd-kicker">Against the Caption · Bronx Memory Map</div>
+        <div class="sd-title">${escHtml(entry.title)}</div>
+        <div class="sd-tags">${tags}</div>
+        ${imgHtml}
+        <p class="sd-story">${escHtml(entry.story)}</p>
+        ${soundtrackHtml}
+        ${entry.contributorCredit ? `<div class="sd-attrib">${escHtml(entry.contributorCredit)}</div>` : ""}
+        <button class="sd-close" id="sdClose">✕ Close</button>
+      `;
+      panel.classList.add("open");
+      panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      document.getElementById("sdClose").addEventListener("click", () => {
+        panel.classList.remove("open");
+        panel.innerHTML = "";
+        document.querySelectorAll(".card").forEach(c => {
+          c.classList.remove("active");
+          const e = entries.find(en => en.id === c.dataset.id);
+          if (e) c.style.borderLeftColor = dotColor(e.decade) + "30";
         });
       });
     }
