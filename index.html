@@ -474,6 +474,30 @@
     }
 
 
+    .sidebar-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      padding: 8px 16px 10px;
+      border-bottom: 1px solid var(--border);
+      background: var(--paper);
+    }
+    .sidebar-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+    }
+    .sidebar-legend-dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 1.5px solid rgba(255,255,255,0.4);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
     /* =====================================================
        SECTION 9: MAP — DESKTOP POPUP
        Dark card shown when clicking a pin on desktop
@@ -629,7 +653,7 @@
         z-index: 800;
         transform: translateY(100%);
         transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
-        max-height: 60dvh;
+        max-height: 75dvh;
         overflow-y: auto;
       }
       .bottom-sheet.open { transform: translateY(0); }
@@ -733,6 +757,8 @@
       .count { padding: 5px 14px; }
       .cards { padding: 6px 10px; }
       .map-legend { display: none; }
+      /* Show a mini color key in the sidebar instead */
+      .sidebar-legend { display: flex !important; }
 
       /* Tab bar fixed at top */
       .mobile-tabs {
@@ -954,6 +980,8 @@
         <!-- hidden elements kept so JS doesn't break -->
         <div style="display:none"><div id="decadeSpark"></div><div id="topTags"></div></div>
       </div>
+
+      <div class="sidebar-legend" id="sidebarLegend"></div>
 
       <div class="submit-cta">
         <a class="btn-submit" id="submitLink" href="#" target="_blank" rel="noreferrer">
@@ -1196,9 +1224,18 @@
     ===================================================== */
     function buildLegend(list) {
       const decades = [...new Set(list.map(e => e.decade))].sort();
-      document.getElementById("legendItems").innerHTML = decades.map(d =>
+      const itemsHtml = decades.map(d =>
         `<div class="legend-item"><div class="legend-dot" style="background:${dotColor(d)}"></div><span>${d}</span></div>`
       ).join("");
+      document.getElementById("legendItems").innerHTML = itemsHtml;
+
+      // Also populate the always-visible sidebar legend
+      const sidebarLegend = document.getElementById("sidebarLegend");
+      if (sidebarLegend) {
+        sidebarLegend.innerHTML = decades.map(d =>
+          `<div class="sidebar-legend-item"><div class="sidebar-legend-dot" style="background:${dotColor(d)}"></div><span>${d}</span></div>`
+        ).join("");
+      }
     }
 
 
@@ -1413,10 +1450,8 @@
           if (!m) return;
           const isMobile = window.matchMedia("(max-width:980px)").matches;
           if (isMobile) {
-            // Open sheet immediately, then switch to map and fly
+            // Open bottom sheet over the sidebar — don't switch to map tab
             if (entry) openSheet(entry);
-            switchTab("map");
-            setTimeout(() => map.flyTo(m.getLatLng(), 15, { animate:true, duration:0.6 }), 150);
           } else {
             map.flyTo(m.getLatLng(), 14, { animate:true, duration:0.6 });
             map.once("moveend", () => {
