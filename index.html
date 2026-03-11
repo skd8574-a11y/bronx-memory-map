@@ -378,9 +378,17 @@
       transition: background 0.15s, border-left-color 0.15s, box-shadow 0.15s;
       background: white;
     }
-    .card:hover { background: var(--paper); border-left-color: var(--gold); box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
-    .card.active { background: var(--paper); border-left-color: var(--rust); box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
-    .card-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px; }
+    .card:hover {
+      background: var(--paper);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      /* border-left color comes from inline style set per-card */
+      filter: brightness(0.97);
+    }
+    .card.active {
+      background: var(--paper);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+    .card-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
     .card-neighborhood {
       font-family: 'IBM Plex Mono', monospace;
       font-size: 8px;
@@ -388,7 +396,12 @@
       text-transform: uppercase;
       letter-spacing: 0.12em;
     }
-    .card-music { font-size: 10px; color: var(--sage); }
+    .card-id {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px;
+      color: var(--border);
+      letter-spacing: 0.08em;
+    }
     .card h3 {
       font-family: 'Playfair Display', serif;
       font-size: 14px;
@@ -1264,23 +1277,40 @@
         return;
       }
       cards.innerHTML = list.map(e => `
-        <article class="card" data-id="${escHtml(e.id)}">
+        <article class="card" data-id="${escHtml(e.id)}" style="border-left-color:${dotColor(e.decade)}20">
           <div class="card-meta">
             <span class="card-neighborhood">${escHtml(e.neighborhood)}</span>
-            ${e.soundtrack ? '<span class="card-music">♪</span>' : ''}
+            <span class="card-id">${escHtml(e.id)}</span>
           </div>
           <h3>${escHtml(e.title)}</h3>
           <div class="card-excerpt">${escHtml(e.story.slice(0,160))}…</div>
           <div class="meta">
             <span class="chip decade" style="background:${dotColor(e.decade)}">${escHtml(e.decade)}</span>
             ${(e.tags||[]).slice(0,2).map(t=>`<span class="chip">${escHtml(t)}</span>`).join("")}
+            ${e.soundtrack ? '<span class="chip" style="color:var(--sage);border-color:var(--sage)">♪ soundtrack</span>' : ''}
+            ${e.artifact ? '<span class="chip" style="color:var(--muted)">⬛ photo</span>' : ''}
           </div>
         </article>`).join("");
 
       cards.querySelectorAll(".card").forEach(card => {
+        const decadeColor = dotColor(entries.find(e => e.id === card.dataset.id)?.decade || "");
+
+        card.addEventListener("mouseenter", () => {
+          card.style.borderLeftColor = decadeColor;
+        });
+        card.addEventListener("mouseleave", () => {
+          if (!card.classList.contains("active"))
+            card.style.borderLeftColor = decadeColor + "30";
+        });
+
         card.addEventListener("click", () => {
-          cards.querySelectorAll(".card").forEach(c => c.classList.remove("active"));
+          cards.querySelectorAll(".card").forEach(c => {
+            c.classList.remove("active");
+            const e = entries.find(en => en.id === c.dataset.id);
+            if (e) c.style.borderLeftColor = dotColor(e.decade) + "30";
+          });
           card.classList.add("active");
+          card.style.borderLeftColor = decadeColor;
           const id    = card.getAttribute("data-id");
           const m     = markerById.get(id);
           const entry = entries.find(e => e.id === id);
