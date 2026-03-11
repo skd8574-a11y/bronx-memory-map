@@ -195,6 +195,91 @@
 
 
     /* =====================================================
+       SECTION 5b: PATTERNS PANEL
+       "What the archive is showing" — data as reflection
+    ===================================================== */
+    .patterns-panel {
+      padding: 0;
+      border-bottom: 1px solid var(--border);
+      background: var(--cream);
+      flex-shrink: 0;
+    }
+    .patterns-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 18px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color 0.15s;
+    }
+    .patterns-toggle:hover { color: var(--ink); }
+    .toggle-arrow { font-size: 8px; transition: transform 0.2s; }
+    .patterns-toggle[aria-expanded="true"] .toggle-arrow { transform: rotate(90deg); }
+    .patterns-body {
+      padding: 0 18px 12px;
+      max-height: 260px;
+      overflow-y: auto;
+    }
+
+    .pattern-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pattern-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--ink);
+      min-width: 80px;
+      flex-shrink: 0;
+    }
+    .pattern-dots { display: flex; gap: 3px; flex-wrap: wrap; }
+    .pattern-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .pattern-count {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+      margin-left: 2px;
+    }
+
+    .pattern-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 8px 0;
+    }
+    .pattern-note {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 11px;
+      line-height: 1.7;
+      color: var(--muted);
+      font-style: italic;
+      margin-bottom: 12px;
+      border-left: 2px solid var(--border);
+      padding-left: 8px;
+    }
+    .patterns-sub {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 7px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .pattern-empty { font-size: 10px; color: var(--muted); }
+
+    /* =====================================================
        SECTION 6: SIDEBAR — FILTERS
        Search box + decade / neighborhood / tag dropdowns
     ===================================================== */
@@ -274,6 +359,7 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
+      min-height: 200px; /* always guarantee at least this much space for cards */
     }
     .empty-state {
       border: 1px dashed var(--border);
@@ -313,12 +399,12 @@
     .card-excerpt {
       font-size: 11px;
       color: var(--muted);
-      line-height: 1.5;
+      line-height: 1.6;
       display: -webkit-box;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      margin-bottom: 5px;
+      margin-bottom: 7px;
     }
     .meta { display: flex; flex-wrap: wrap; gap: 4px; }
     .chip {
@@ -780,14 +866,8 @@
           <span class="stat-num" id="statNbhd">0</span>
           <span class="stat-lbl">Neighborhoods</span>
         </div>
-        <div class="stat-block" style="align-items:flex-end;gap:8px;">
-          <span class="stat-lbl" style="align-self:center;">By decade</span>
-          <div class="decade-spark" id="decadeSpark"></div>
-        </div>
-        <div class="stat-block" style="align-items:center;gap:7px;">
-          <span class="stat-lbl">Themes</span>
-          <div class="theme-pills" id="topTags"></div>
-        </div>
+        <!-- hidden elements kept so JS doesn't break -->
+        <div style="display:none"><div id="decadeSpark"></div><div id="topTags"></div></div>
       </div>
 
       <div class="submit-cta">
@@ -797,10 +877,20 @@
         <p class="submit-note">This archive grows with every submission. Your story belongs here.</p>
       </div>
 
+      <!-- Patterns panel — collapsible, click header to expand -->
+      <div class="patterns-panel" id="patternsPanel">
+        <button class="patterns-toggle" id="patternsToggle" aria-expanded="false">
+          <span>What the archive is showing</span>
+          <span class="toggle-arrow">▶</span>
+        </button>
+        <div class="patterns-body" id="patternsBody" style="display:none;margin-top:10px;"></div>
+      </div>
+
       <div class="filters">
         <div class="field" style="grid-column:1/-1;">
           <label for="q">Search</label>
           <input id="q" placeholder="title, neighborhood, tags, text…" />
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);margin-top:3px;">Tap a card or a dot on the map to read the full memory.</span>
         </div>
         <div class="field">
           <label for="decade">Decade</label>
@@ -844,7 +934,7 @@
        SECTION A: CONFIGURATION
     ===================================================== */
     const SUBMIT_URL   = "https://tally.so/r/81dD5O";
-    const BRONX_BOUNDS = [[40.785, -73.935], [40.915, -73.765]];
+    const BRONX_BOUNDS = [[40.808, -73.925], [40.898, -73.795]];
     document.getElementById("submitLink").href = SUBMIT_URL;
 
 
@@ -984,8 +1074,8 @@
       const tagCounts = {};
       list.forEach(e => (e.tags||[]).forEach(t => tagCounts[t] = (tagCounts[t]||0)+1));
       const top4 = Object.entries(tagCounts).sort((a,b) => b[1]-a[1]).slice(0,4);
-      document.getElementById("topTags").innerHTML = top4.map(([tag]) =>
-        `<span class="theme-pill" data-tag="${escHtml(tag)}">${escHtml(tag)}</span>`
+      document.getElementById("topTags").innerHTML = top4.map(([tag, count]) =>
+        `<span class="theme-pill" data-tag="${escHtml(tag)}">${escHtml(tag)} <strong style="color:var(--rust)">${count}</strong></span>`
       ).join("");
       document.querySelectorAll(".theme-pill").forEach(p =>
         p.addEventListener("click", () => { document.getElementById("tag").value = p.dataset.tag; applyFilters(); })
@@ -1005,9 +1095,58 @@
 
 
     /* =====================================================
-       SECTION H: SPOTIFY EMBED HELPER
-       Extracts track ID and returns an iframe player
+       SECTION G2: PATTERNS PANEL
+       "What the archive is showing" — written in your voice.
+       The observations text is hand-written (edit it yourself
+       as more submissions come in). The dot charts are live.
     ===================================================== */
+    function buildPatterns(list) {
+      const body = document.getElementById("patternsBody");
+      if (!body) return;
+
+      // --- Decade dot chart ---
+      const decadeCounts = {};
+      list.forEach(e => {
+        const k = e.decade === "Early 2000s" ? "2000s" : e.decade;
+        decadeCounts[k] = (decadeCounts[k] || 0) + 1;
+      });
+      const decadeOrder = ["1970s","1980s","1990s","2000s","2010s","2020s"];
+      const decadeRows = decadeOrder
+        .filter(d => decadeCounts[d])
+        .map(d => {
+          const dots = Array(decadeCounts[d]).fill(0)
+            .map(() => `<div class="pattern-dot" style="background:${dotColor(d)}"></div>`).join("");
+          return `<div class="pattern-row">
+            <span class="pattern-label">${d}</span>
+            <div class="pattern-dots">${dots}</div>
+            <span class="pattern-count">${decadeCounts[d]}</span>
+          </div>`;
+        }).join("");
+
+      // --- Theme dot chart ---
+      const tagCounts = {};
+      list.forEach(e => (e.tags||[]).forEach(t => tagCounts[t] = (tagCounts[t]||0)+1));
+      const topTags = Object.entries(tagCounts).sort((a,b) => b[1]-a[1]).slice(0,5);
+      const tagRows = topTags.map(([tag, count]) => {
+        const dots = Array(count).fill(0)
+          .map(() => `<div class="pattern-dot" style="background:var(--muted)"></div>`).join("");
+        const label = tag.replaceAll("-", " ");
+        return `<div class="pattern-row">
+          <span class="pattern-label" title="${tag}">${label.length > 20 ? label.slice(0,20)+"…" : label}</span>
+          <div class="pattern-dots">${dots}</div>
+          <span class="pattern-count">${count}</span>
+        </div>`;
+      }).join("");
+
+      body.innerHTML = `
+        <p class="pattern-note">Early submissions keep returning to the same few places — libraries, stoops, food spots, trains. The Bronx people describe isn't the one you read about in the news. It's smaller. More specific. More theirs.</p>
+        <div class="patterns-sub">By decade</div>
+        ${decadeRows || '<span class="pattern-empty">No data yet</span>'}
+        <hr class="pattern-divider"/>
+        <div class="patterns-sub">By theme</div>
+        ${tagRows || '<span class="pattern-empty">No data yet</span>'}
+      `;
+    }
     function spotifyEmbed(spotifyUrl) {
       const trackId = spotifyUrl.match(/track\/([a-zA-Z0-9]+)/)?.[1];
       if (!trackId) return "";
@@ -1131,7 +1270,7 @@
             ${e.soundtrack ? '<span class="card-music">♪</span>' : ''}
           </div>
           <h3>${escHtml(e.title)}</h3>
-          <div class="card-excerpt">${escHtml(e.story.slice(0,100))}…</div>
+          <div class="card-excerpt">${escHtml(e.story.slice(0,160))}…</div>
           <div class="meta">
             <span class="chip decade" style="background:${dotColor(e.decade)}">${escHtml(e.decade)}</span>
             ${(e.tags||[]).slice(0,2).map(t=>`<span class="chip">${escHtml(t)}</span>`).join("")}
@@ -1187,6 +1326,7 @@
       renderCards(filtered);
       buildStats(filtered);
       buildLegend(filtered);
+      buildPatterns(filtered);
       closeSheet();
     }
 
@@ -1251,6 +1391,7 @@
       renderCards(entries);
       buildStats(entries);
       buildLegend(entries);
+      buildPatterns(entries);
       const isMobile = window.matchMedia("(max-width:980px)").matches;
       map.fitBounds(bronxBounds, { padding: isMobile ? [10,10] : [24,24], maxZoom: isMobile ? 11 : 13 });
       ["q","decade","hood","tag"].forEach(id => {
@@ -1269,6 +1410,15 @@
       // Wire up mobile tab buttons here (safer than onclick attributes)
       document.getElementById("tabMap").addEventListener("click",  () => switchTab("map"));
       document.getElementById("tabList").addEventListener("click", () => switchTab("list"));
+
+      // Patterns panel toggle
+      document.getElementById("patternsToggle").addEventListener("click", () => {
+        const body   = document.getElementById("patternsBody");
+        const toggle = document.getElementById("patternsToggle");
+        const open   = toggle.getAttribute("aria-expanded") === "true";
+        toggle.setAttribute("aria-expanded", !open);
+        body.style.display = open ? "none" : "block";
+      });
     }
 
     init();
