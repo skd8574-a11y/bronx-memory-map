@@ -1143,16 +1143,28 @@
         soundtrack: { label: "4K — El Alfa, Darell, Noriel", spotifyUrl: "https://open.spotify.com/track/4xI3U4sDj1TPmO9Iz5TkYp" }
       },
       {
-  id: "BX-0008",
-  title: "Bronx Week 2018",
-  neighborhood: "Bedford Park",
-  decade: "2010s",
-  tags: ["organizing-activism", "black-bronx-life", "family-photograph"],
-  lat: 40.8723, lng: -73.8895,
-  story: `A large part of my mom's story is being from the Bronx, so she was so touched to be honored by her borough. We got to be a part of the parade and a street sign with her name was hung up. It was a really beautiful day.`,
-  artifact: { type: "image", url: "assets/images/BronxWeek2018.jpeg" },
-  contributorCredit: "Contributor submission (anonymous)",
-},
+        id: "BX-0008",
+        title: "Bronx Week 2018",
+        neighborhood: "Bedford Park",
+        decade: "2010s",
+        tags: ["organizing-activism","black-bronx-life","family-photograph"],
+        lat: 40.8723, lng: -73.8895,
+        story: `A large part of my mom's story is being from the Bronx, so she was so touched to be honored by her borough. We got to be a part of the parade and a street sign with her name was hung up. It was a really beautiful day.`,
+        artifact: { type: "image", url: "assets/images/BronxWeek2018.jpeg" },
+        contributorCredit: "Contributor submission (anonymous)",
+      },
+      {
+        id: "BX-0009",
+        title: "First time at a recording studio",
+        neighborhood: "Wakefield",
+        decade: "2020s",
+        tags: ["hip-hop-origins","music-memory","growing-up-in-the-bronx"],
+        lat: 40.8978, lng: -73.8534,
+        story: `Recorded my first song here! Not too far from the 223rd station on the 2/5 line.`,
+        artifact: { type: "image", url: "assets/images/FirstRecordingStudio.jpeg" },
+        contributorCredit: "Contributor submission (Renel)",
+        soundtrack: { label: "Nevermind — Renel", youtubeUrl: "https://youtu.be/IXpCNm9BmQQ" }
+      }
     ];
 
     /* =====================================================
@@ -1312,6 +1324,24 @@
         loading="lazy" style="border-radius:10px;margin-top:6px;display:block;"></iframe>`;
     }
 
+    function youtubeEmbed(youtubeUrl) {
+      const videoId = youtubeUrl.match(/(?:youtu\.be\/|v=|\/embed\/)([a-zA-Z0-9_-]{11})/)?.[1];
+      if (!videoId) return "";
+      return `<iframe src="https://www.youtube.com/embed/${videoId}"
+        width="100%" height="200" frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen loading="lazy"
+        style="border-radius:10px;margin-top:6px;display:block;"></iframe>`;
+    }
+
+    function soundtrackEmbed(entry) {
+      if (entry.soundtrack?.spotifyUrl)
+        return `<div class="soundtrack"><div class="label">♪ Memory Soundtrack</div>${spotifyEmbed(entry.soundtrack.spotifyUrl)}</div>`;
+      if (entry.soundtrack?.youtubeUrl)
+        return `<div class="soundtrack"><div class="label">♪ Memory Soundtrack</div>${youtubeEmbed(entry.soundtrack.youtubeUrl)}</div>`;
+      return "";
+    }
+
 
     /* =====================================================
        SECTION I: DESKTOP POPUP HTML
@@ -1320,8 +1350,7 @@
       const chips = (e.tags||[]).map(t => `<span class="chip">${escHtml(t)}</span>`).join("");
       const mediaHtml = e.artifact?.type === "image" && e.artifact.url
         ? `<div class="media"><img src="${escHtml(e.artifact.url)}" alt=""/></div>` : "";
-      const soundtrackHtml = e.soundtrack?.spotifyUrl
-        ? `<div class="soundtrack"><div class="label">♪ Memory Soundtrack</div>${spotifyEmbed(e.soundtrack.spotifyUrl)}</div>` : "";
+      const soundtrackHtml = soundtrackEmbed(e);
       return `<div class="popup-inner"><div class="popup">
         <div class="archive-label">Against the Caption · Bronx Memory Map</div>
         <h2>${escHtml(e.title)}</h2>
@@ -1343,8 +1372,7 @@
       const tags = (entry.tags||[]).map(t => `<span class="chip">${escHtml(t)}</span>`).join("");
       const imgHtml = entry.artifact?.type === "image" && entry.artifact.url
         ? `<img class="sheet-img" src="${escHtml(entry.artifact.url)}" alt=""/>` : "";
-      const soundtrackHtml = entry.soundtrack?.spotifyUrl
-        ? `<div class="sheet-soundtrack"><div class="sheet-soundtrack-label">♪ Memory Soundtrack</div>${spotifyEmbed(entry.soundtrack.spotifyUrl)}</div>` : "";
+      const soundtrackHtml = soundtrackEmbed(entry);
 
       document.getElementById("sheetBody").innerHTML = `
         <div class="sheet-kicker">${escHtml(entry.neighborhood)} · ${escHtml(entry.decade)}</div>
@@ -1484,8 +1512,8 @@
       const tags = (entry.tags||[]).map(t => `<span class="chip">${escHtml(t)}</span>`).join("");
       const imgHtml = entry.artifact?.type === "image" && entry.artifact.url
         ? `<img class="sd-img" src="${escHtml(entry.artifact.url)}" alt=""/>` : "";
-      const soundtrackHtml = entry.soundtrack?.spotifyUrl
-        ? `<div class="sd-soundtrack"><div class="sd-soundtrack-label">♪ Memory Soundtrack</div>${spotifyEmbed(entry.soundtrack.spotifyUrl)}</div>` : "";
+      const soundtrackHtml = entry.soundtrack
+        ? `<div class="sd-soundtrack"><div class="sd-soundtrack-label">♪ Memory Soundtrack</div>${entry.soundtrack.spotifyUrl ? spotifyEmbed(entry.soundtrack.spotifyUrl) : youtubeEmbed(entry.soundtrack.youtubeUrl||"")}</div>` : "";
       panel.innerHTML = `
         <div class="sd-kicker">Against the Caption · Bronx Memory Map</div>
         <div class="sd-title">${escHtml(entry.title)}</div>
