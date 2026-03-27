@@ -444,8 +444,6 @@
       line-height: 1.6;
       display: -webkit-box;
       -webkit-line-clamp: 3;
-      -webkit-line-clamp: 3;
-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
       margin-bottom: 7px;
@@ -970,8 +968,8 @@ line-clamp: 3;
        MOBILE TAB BAR (phones only)
   ===================================================== -->
   <div class="mobile-tabs">
-    <button class="mobile-tab" id="tabMap">🗺 Map</button>
-    <button class="mobile-tab active" id="tabList">☰ Memories</button>
+    <button class="mobile-tab active" id="tabMap">🗺 Map</button>
+    <button class="mobile-tab" id="tabList">☰ Memories</button>
   </div>
 
   <!-- =====================================================
@@ -1661,6 +1659,7 @@ line-clamp: 3;
       buildLegend(entries);
       buildPatterns(entries);
       const isMobile = window.matchMedia("(max-width:700px)").matches;
+      if (isMobile) switchTab("map");
       map.fitBounds(bronxBounds, { padding: isMobile ? [10,10] : [24,24], maxZoom: isMobile ? 11 : 13 });
       ["q","decade","hood","tag"].forEach(id => {
         document.getElementById(id).addEventListener("input",  applyFilters);
