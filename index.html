@@ -751,73 +751,77 @@
     .mobile-tabs { display: none; }
 
     @media (max-width: 700px) {
-      /* Stack everything */
+      /* Split layout — map top, cards bottom */
       .app {
-        display: block;
-        height: 100dvh;
-        padding-top: 48px;
-      }
-      /* Map fills full screen below tab bar, hidden by default */
-      .map-wrap {
-        position: fixed;
-        top: 48px; left: 0; right: 0; bottom: 0;
-        display: none;
-      }
-      #map { height: 100%; width: 100%; }
-
-      /* Sidebar fills full screen below tab bar, shown by default */
-      .sidebar {
-        position: fixed;
-        top: 48px; left: 0; right: 0; bottom: 0;
-        overflow-y: auto;
-        border-right: none;
         display: flex;
         flex-direction: column;
-        z-index: 10;
+        height: 100dvh;
+        overflow: hidden;
       }
 
-      /* Compact mobile header */
-      .sidebar-header { padding: 8px 14px; }
-      .title { font-size: 17px; }
-      .why-statement { font-size: 10px; }
-      .stats-bar { display: none; }
-      .submit-cta { padding: 7px 14px 6px; }
-      .filters { padding: 8px 14px; gap: 6px; grid-template-columns: 1fr 1fr; }
-      .count { padding: 5px 14px; }
-      .cards { padding: 6px 10px; }
+      /* Map takes top 52% — must come first in flex order */
+      .map-wrap {
+        position: relative;
+        flex: 0 0 52%;
+        width: 100%;
+        display: block !important;
+        order: 1;
+      }
+      #map { height: 100%; width: 100%; }
       .map-legend { display: none; }
-      /* Show a mini color key in the sidebar instead */
-      .sidebar-legend { display: flex !important; }
 
-      /* Tab bar fixed at top */
-      .mobile-tabs {
-        display: flex;
-        position: fixed;
-        top: 0; left: 0; right: 0;
-        height: 48px;
-        background: var(--ink);
-        border-bottom: 2px solid var(--rust);
-        z-index: 1000;
-      }
-      .mobile-tab {
+      /* Cards panel — bottom 48%, scrollable, comes second */
+      .sidebar {
         flex: 1;
+        overflow-y: auto;
+        border-right: none;
+        border-top: 3px solid var(--rust);
         display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        font-family: 'IBM Plex Mono', monospace;
-        font-size: 10px;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: #5A4830;
-        background: none;
-        border: none;
-        border-right: 1px solid #2A1A10;
-        cursor: pointer;
-        transition: color 0.15s;
+        flex-direction: column;
+        width: 100% !important;
+        min-width: unset !important;
+        max-width: unset !important;
+        position: relative;
+        z-index: 10;
+        order: 2;
       }
-      .mobile-tab:last-child { border-right: none; }
-      .mobile-tab.active { color: var(--gold); }
+
+      /* Hide things that take up too much space on mobile */
+      .sidebar-header { display: none; }
+      .stats-bar { display: none; }
+      .patterns-panel { display: block; }
+      .submit-cta { padding: 6px 14px 5px; }
+      .btn-submit { padding: 8px 14px; font-size: 10px; }
+      .submit-note { display: none; }
+      .filters { padding: 6px 14px; gap: 5px; grid-template-columns: 1fr 1fr; }
+      .count { padding: 4px 14px; }
+      .cards { padding: 5px 10px; }
+      .sidebar-legend { display: flex !important; padding: 5px 14px 4px; }
+
+      /* Compact mobile header — shown as a small strip */
+      .mobile-header-strip {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--ink);
+        padding: 6px 14px;
+        border-bottom: 2px solid var(--rust);
+        flex-shrink: 0;
+      }
+      .mobile-header-strip .strip-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 13px;
+        color: var(--cream);
+        font-weight: 700;
+      }
+      .mobile-header-strip .strip-title em { color: var(--gold); font-style: italic; }
+      .mobile-header-strip .strip-sub {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 8px;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+      }
+
       .leaflet-control-attribution { font-size: 8px !important; }
       .leaflet-popup { display: none !important; }
     }
@@ -964,12 +968,13 @@
     </div>
   </div>
 
-  <!-- =====================================================
-       MOBILE TAB BAR (phones only)
-  ===================================================== -->
-  <div class="mobile-tabs">
-    <button class="mobile-tab active" id="tabMap">🗺 Map</button>
-    <button class="mobile-tab" id="tabList">☰ Memories</button>
+  <!-- Mobile header strip (replaces tab bar) -->
+  <div class="mobile-header-strip" style="display:none;">
+    <div>
+      <div class="strip-title">The Bronx <em>Remembers</em></div>
+      <div class="strip-sub">Against the Caption · Bronx Memory Map</div>
+    </div>
+    <a class="btn-submit" id="submitLinkMobile" href="#" target="_blank" rel="noreferrer" style="width:auto;padding:6px 12px;font-size:9px;">+ Add Memory</a>
   </div>
 
   <!-- =====================================================
@@ -1469,6 +1474,24 @@
 
 
     /* =====================================================
+       SECTION K2: PULSE MARKER
+       Briefly enlarges a dot so the user knows which one
+       corresponds to the memory they clicked.
+    ===================================================== */
+    function pulseMarker(marker) {
+      const el = marker.getElement();
+      if (!el) return;
+      const dot = el.querySelector("div");
+      if (!dot) return;
+      dot.style.transform = "scale(2)";
+      dot.style.transition = "transform 0.2s";
+      setTimeout(() => {
+        dot.style.transform = "scale(1)";
+      }, 600);
+    }
+
+
+    /* =====================================================
        SECTION L: MEMORY CARDS
        Clicking a card → flies map to pin.
        On mobile → also opens the bottom sheet.
@@ -1521,8 +1544,11 @@
           if (!m) return;
           const isMobile = window.matchMedia("(max-width:700px)").matches;
           if (isMobile) {
-            // Open bottom sheet over the sidebar — don't switch to map tab
             if (entry) openSheet(entry);
+            // Fly map to the dot so user can see which one it is
+            map.flyTo(m.getLatLng(), 13, { animate: true, duration: 0.5 });
+            // Pulse the marker so it's obvious
+            pulseMarker(m);
           } else {
             map.flyTo(m.getLatLng(), 14, { animate:true, duration:0.6 });
             map.once("moveend", () => {
@@ -1601,29 +1627,8 @@
        SECTION N: MOBILE TAB SWITCHING
        Uses direct style changes — simpler and more reliable
     ===================================================== */
-    function switchTab(tab) {
-      const isMobile = window.matchMedia("(max-width:700px)").matches;
-      if (!isMobile) return;
-
-      const sidebar  = document.querySelector(".sidebar");
-      const mapWrap  = document.querySelector(".map-wrap");
-      const tabMap   = document.getElementById("tabMap");
-      const tabList  = document.getElementById("tabList");
-
-      if (tab === "map") {
-        sidebar.style.display  = "none";
-        mapWrap.style.display  = "block";
-        tabMap.classList.add("active");
-        tabList.classList.remove("active");
-        setTimeout(() => map.invalidateSize(), 100);
-      } else {
-        sidebar.style.display  = "flex";
-        mapWrap.style.display  = "none";
-        tabList.classList.add("active");
-        tabMap.classList.remove("active");
-        closeSheet();
-      }
-    }
+    // switchTab kept as no-op for any remaining references
+    function switchTab(tab) {}
 
 
     /* =====================================================
@@ -1659,8 +1664,8 @@
       buildLegend(entries);
       buildPatterns(entries);
       const isMobile = window.matchMedia("(max-width:700px)").matches;
-      if (isMobile) switchTab("map");
-      map.fitBounds(bronxBounds, { padding: isMobile ? [10,10] : [24,24], maxZoom: isMobile ? 11 : 13 });
+      map.fitBounds(bronxBounds, { padding: isMobile ? [10,10] : [24,24], maxZoom: isMobile ? 12 : 13 });
+      setTimeout(() => map.invalidateSize(), 200);
       ["q","decade","hood","tag"].forEach(id => {
         document.getElementById(id).addEventListener("input",  applyFilters);
         document.getElementById(id).addEventListener("change", applyFilters);
@@ -1674,9 +1679,9 @@
         map.fitBounds(bronxBounds, { padding: isMobile ? [10,10] : [24,24], maxZoom: isMobile ? 11 : 13 });
       });
 
-      // Wire up mobile tab buttons here (safer than onclick attributes)
-      document.getElementById("tabMap").addEventListener("click",  () => switchTab("map"));
-      document.getElementById("tabList").addEventListener("click", () => switchTab("list"));
+      // Wire up mobile submit button
+      const submitMobile = document.getElementById("submitLinkMobile");
+      if (submitMobile) submitMobile.href = SUBMIT_URL;
 
       // Patterns panel toggle
       document.getElementById("patternsToggle").addEventListener("click", () => {
