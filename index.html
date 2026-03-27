@@ -36,23 +36,52 @@
 
     /* =====================================================
        SECTION 2: DESKTOP LAYOUT
-       Two-column: sidebar (400px left) + map (right)
+       Two-column: sidebar (resizable, default 400px) + map (right)
+       User can drag the divider to resize.
     ===================================================== */
     .app {
-      display: grid;
-      grid-template-columns: 400px 1fr;
+      display: flex;
       height: 100dvh;
       overflow: hidden;
     }
     .sidebar {
       background: var(--cream);
-      border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      order: 1;
+      width: 400px;
+      min-width: 280px;
+      max-width: 700px;
+      flex-shrink: 0;
+      position: relative;
     }
-    .map-wrap { position: relative; height: 100%; order: 2; }
+    /* Drag handle between sidebar and map */
+    .resize-handle {
+      width: 6px;
+      background: var(--border);
+      cursor: col-resize;
+      flex-shrink: 0;
+      transition: background 0.15s;
+      position: relative;
+      z-index: 100;
+    }
+    @media (max-width: 700px) {
+      .resize-handle { display: none; }
+    }
+    .resize-handle:hover,
+    .resize-handle.dragging { background: var(--rust); }
+    .resize-handle::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 2px;
+      height: 32px;
+      background: rgba(0,0,0,0.15);
+      border-radius: 2px;
+    }
+    .map-wrap { position: relative; flex: 1; min-width: 200px; }
     #map { height: 100%; width: 100%; }
 
 
@@ -415,6 +444,8 @@
       line-height: 1.6;
       display: -webkit-box;
       -webkit-line-clamp: 3;
+      -webkit-line-clamp: 3;
+line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
       margin-bottom: 7px;
@@ -1027,6 +1058,8 @@
       <section class="cards" id="cards"></section>
 
     </aside>
+
+    <div class="resize-handle" id="resizeHandle"></div>
 
     <main class="map-wrap">
       <div id="map"></div>
@@ -1655,6 +1688,45 @@
         body.style.display = open ? "none" : "block";
       });
     }
+
+    /* =====================================================
+       SECTION Q: RESIZABLE SIDEBAR
+       Drag the handle to resize sidebar vs map.
+       Only active on desktop (>700px).
+    ===================================================== */
+    (function() {
+      const handle  = document.getElementById("resizeHandle");
+      const sidebar = document.querySelector(".sidebar");
+      const app     = document.querySelector(".app");
+      let dragging  = false;
+
+      handle.addEventListener("mousedown", e => {
+        if (window.matchMedia("(max-width:700px)").matches) return;
+        dragging = true;
+        handle.classList.add("dragging");
+        document.body.style.cursor = "col-resize";
+        document.body.style.userSelect = "none";
+        e.preventDefault();
+      });
+
+      document.addEventListener("mousemove", e => {
+        if (!dragging) return;
+        const appRect = app.getBoundingClientRect();
+        let newWidth = e.clientX - appRect.left;
+        newWidth = Math.max(280, Math.min(700, newWidth));
+        sidebar.style.width = newWidth + "px";
+        map.invalidateSize();
+      });
+
+      document.addEventListener("mouseup", () => {
+        if (!dragging) return;
+        dragging = false;
+        handle.classList.remove("dragging");
+        document.body.style.cursor = "";
+        document.body.style.userSelect = "";
+        map.invalidateSize();
+      });
+    })();
 
     init();
 
