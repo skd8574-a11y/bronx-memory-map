@@ -1454,8 +1454,10 @@
         {name:"167th St",lat:40.8356,lng:-73.9155},{name:"161st St–Yankee Stadium",lat:40.8277,lng:-73.9254}
       ]},
       { name:"1", color:"#EE352E", stops:[
-        {name:"225th St",lat:40.8740,lng:-73.9100},{name:"215th St",lat:40.8693,lng:-73.9148},
-        {name:"207th St",lat:40.8646,lng:-73.9193}
+        {name:"225th St",                    lat:40.8740, lng:-73.9100},
+        {name:"231st St",                    lat:40.8783, lng:-73.9060},
+        {name:"238th St",                    lat:40.8847, lng:-73.9023},
+        {name:"Van Cortlandt Park–242nd St", lat:40.8897, lng:-73.8988},
       ]},
     ];
 
@@ -1660,7 +1662,7 @@
       }).join("");
 
       body.innerHTML = `
-        <p class="pattern-note">Projects and data about the Bronx often rely on statistics, crime reports, or outside narratives. This archive focuses instead on memory. The small places, routines, and relationships that shape how people actually experience the borough. Our Borough.</p>
+        <p class="pattern-note">With 16 memories so far, early patterns are already visible. Most submissions are from the 2020s, reflecting who has encountered the archive rather than the full scope of Bronx memory. The near absence of the 1980s and 1990s signals a gap in participation, where earlier histories remain underrepresented. The most common themes, growing up, everyday life, and the block, show that memory is anchored in routine, place-based experience rather than major events. This directly challenges dominant narratives of the Bronx, which are often framed through crisis or spectacle. The archive instead reveals a consistent pattern: the borough is remembered through the everyday.</p>
         <div class="patterns-sub">By decade</div>
         ${decadeRows || '<span class="pattern-empty">No data yet</span>'}
         <hr class="pattern-divider"/>
