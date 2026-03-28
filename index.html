@@ -528,6 +528,74 @@
     }
 
     /* =====================================================
+       SECTION 8b: 4 TRAIN OVERLAY
+    ===================================================== */
+    .train-controls {
+      position: absolute;
+      bottom: 28px;
+      left: 12px;
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      align-items: flex-start;
+    }
+    .train-controls-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: rgba(255,255,255,0.9);
+      padding: 3px 8px;
+      border-radius: 4px;
+      backdrop-filter: blur(4px);
+    }
+    .train-pills { display: flex; gap: 5px; flex-wrap: wrap; }
+    .train-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,255,255,0.92);
+      border: 1.5px solid rgba(255,255,255,0.5);
+      border-radius: 999px;
+      padding: 4px 10px 4px 4px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 0.15s;
+      backdrop-filter: blur(4px);
+      white-space: nowrap;
+    }
+    .train-pill:hover { background: white; border-color: var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    .train-pill.active { background: var(--ink); color: var(--cream); }
+    .train-badge {
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      flex-shrink: 0;
+    }
+    .train-stop-label {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--ink);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    /* =====================================================
        SECTION 9: MAP — DESKTOP POPUP
        Dark card shown when clicking a pin on desktop
     ===================================================== */
@@ -1070,6 +1138,10 @@
         <div class="legend-title">Memory by decade</div>
         <div class="legend-items" id="legendItems"></div>
       </div>
+      <div class="train-controls" id="trainControls">
+        <div class="train-controls-label">Subway lines</div>
+        <div class="train-pills" id="trainPills"></div>
+      </div>
     </main>
 
   </div>
@@ -1213,77 +1285,75 @@
         contributorCredit: "Contributor submission (anonymous)",
         soundtrack: { label: "Dile Al Amor — Aventura", spotifyUrl: "https://open.spotify.com/track/0OE0KJwnzZIq1oxqeEs4RJ" }
       },
-      
-  
-    {
-  id: "BX-0011",
-  title: "Rosas at Park",
-  neighborhood: "South Bronx",
-  decade: "2020s",
-  tags: ["hip-hop-origins", "afro-latinx-bronx", "music-memory"],
-  lat: 40.8094, lng: -73.9251,
-  story: `My friend invited me out to brunch and I haven't been forever. We were there with 3 other of her friends. The food and drinks were amazing and they were playing the kind of music I love to hear, like reggae and old school hip hop.\n\nIt's definitely a Bronx staple this brunch spot/lounge.`,
-  artifact: { type: "image", url: "assets/images/Rosas-Park.jpeg" },
-  contributorCredit: "Contributor submission (anonymous)",
-  soundtrack: { label: "Onana — Jey One", spotifyUrl: "https://open.spotify.com/track/5oVBCcGv1EX2foIs6X6GRw" }
-},
-{
-  id: "BX-0012",
-  title: "Yankees vs Texas Rangers",
-  neighborhood: "Concourse",
-  decade: "2020s",
-  tags: ["growing-up-in-the-bronx", "summer-in-the-bronx", "family-photograph"],
-  lat: 40.8296, lng: -73.9262,
-  story: `My first time at the new Yankee Stadium was actually to see a Texas Rangers game. Funny enough, I'm a Bronx native and of course I love the Yankees — but it turns out my dad's nephew (so I guess my cousin) plays for the Texas Rangers. So my dad, my sister, my other cousin, and I got really good seats — like all the way in the front, we could literally see every player.\n\nOf course we had to represent my cousin, but I still bought a bunch of Yankees merch while I was there. I was lowkey rooting every time the Yankees made a play (even though Texas unfortunately beat us). Still, I was just so excited to finally watch a game in my hometown. Tickets are so expensive, so even if I wasn't outwardly supporting the Yankees… I definitely was in my heart.`,
-  artifact: { type: "image", url: "assets/images/Yankees-Rangers.jpg" },
-  contributorCredit: "Contributor submission (anonymous)",
-  soundtrack: { label: "Take Me Out to the Ballgame — The Countdown Kids", spotifyUrl: "https://open.spotify.com/track/5mM9caYjRbrZ8kYpVt9Vy6" }
-},
-{
-  id: "BX-0013",
-  title: "Lesbian Lovers",
-  neighborhood: "South Bronx",
-  decade: "2020s",
-  tags: ["afro-latinx-bronx", "queer-bronx-life", "music-memory"],
-  lat: 40.8090, lng: -73.9290,
-  story: `My partner of now 5 years and I got matching tattoos literally a year into dating each other.`,
-  artifact: { type: "image", url: "assets/images/Lesbian-Lovers.jpeg" },
-  contributorCredit: "Contributor submission (anonymous)",
-  soundtrack: { label: "Free Mind — Tems", spotifyUrl: "https://open.spotify.com/track/2mzM4Y0Rnx2BDZqRnhQ5Q6" }
-},
-{
-  id: "BX-0014",
-  title: "PS.33",
-  neighborhood: "Fordham",
-  decade: "2000s",
-  tags: ["everyday-bronx-life", "growing-up-in-the-bronx", "community-care"],
-  lat: 40.8614, lng: -73.8978,
-  story: `I don't remember much from this day, but I loved my elementary school. We had a performance out in the yard, and my mom let me wear my favorite dress and bring a disposable camera. At one point, a random second grader photobombed my picture while doing pull-ups.`,
-  artifact: { type: "image", url: "assets/images/PS33.jpeg" },
-  contributorCredit: "Contributor submission (anonymous)",
-},
-{
-  id: "BX-0015",
-  title: "The Life of the Party",
-  neighborhood: "Concourse",
-  decade: "2020s",
-  tags: ["growing-up-in-the-bronx", "block-parties", "black-bronx-life"],
-  lat:40.8448, lng: -73.9285,
-  story: `My partner invited me to their mom's birthday party. She's also from the Bronx and loves it — honestly, maybe even more than most. Watching my partner interact with everyone, showing so much love and grace, reminded me exactly why I fell in love with them. This photo is of them on the dance floor, with everyone cheering them on. They are beautiful.`,
-  artifact: { type: "image", url: "assets/images/Life-of-Party.jpeg" },
-  contributorCredit: "Contributor submission (anonymous)",
-  soundtrack: { label: "Just Fine — Mary J. Blige", spotifyUrl: "https://open.spotify.com/track/33vzOPcd9FRirYGlCu32x4" }
-},
-{
-  id: "BX-0016",
-  title: "Weekend at Berto's",
-  neighborhood: "Hunts Point",
-  decade: "Early 2000s",
-  tags: ["growing-up-in-the-bronx", "community-care", "afro-latinx-bronx"],
-  lat: 40.8120, lng: -73.8880,
-  story: `I grew up spending weekends with my dad in the Bronx. He's Dominican and his cousin owns a restaurant off the Hunts Point stop. At the time my brother and I didn't know the actual name of the place, but we knew it as Berto's. We went to Berto's for dinner every weekend as a family and it was one of the best parts of my childhood. Watching my dad interact with our family, sitting at the bar on the shiny metal stools with red cracked leather tops.\n\nBerto had a pool table in the basement and ritualistically, we'd have dinner upstairs and head down to the basement to watch our dad play pool. Sometimes my brother and I would play against each other but there was one night specifically — being both in our teens by now. My brother and I challenged our dad to play with an arm behind his back. 4 Heinekens in, my dad absolutely wipes the floor with us. It's a memory I hold dear to me.`,
-  contributorCredit: "Contributor submission (Josue)",
-},
+      {
+        id: "BX-0011",
+        title: "Rosas at Park",
+        neighborhood: "South Bronx",
+        decade: "2020s",
+        tags: ["hip-hop-origins", "afro-latinx-bronx", "music-memory"],
+        lat: 40.8094, lng: -73.9251,
+        story: `My friend invited me out to brunch and I haven't been forever. We were there with 3 other of her friends. The food and drinks were amazing and they were playing the kind of music I love to hear, like reggae and old school hip hop.\n\nIt's definitely a Bronx staple this brunch spot/lounge.`,
+        artifact: { type: "image", url: "assets/images/Rosas-Park.jpeg" },
+        contributorCredit: "Contributor submission (anonymous)",
+        soundtrack: { label: "Onana — Jey One", spotifyUrl: "https://open.spotify.com/track/5oVBCcGv1EX2foIs6X6GRw" }
+      },
+      {
+        id: "BX-0012",
+        title: "Yankees vs Texas Rangers",
+        neighborhood: "Concourse",
+        decade: "2020s",
+        tags: ["growing-up-in-the-bronx", "summer-in-the-bronx", "family-photograph"],
+        lat: 40.8296, lng: -73.9262,
+        story: `My first time at the new Yankee Stadium was actually to see a Texas Rangers game. Funny enough, I'm a Bronx native and of course I love the Yankees — but it turns out my dad's nephew (so I guess my cousin) plays for the Texas Rangers. So my dad, my sister, my other cousin, and I got really good seats — like all the way in the front, we could literally see every player.\n\nOf course we had to represent my cousin, but I still bought a bunch of Yankees merch while I was there. I was lowkey rooting every time the Yankees made a play (even though Texas unfortunately beat us). Still, I was just so excited to finally watch a game in my hometown. Tickets are so expensive, so even if I wasn't outwardly supporting the Yankees… I definitely was in my heart.`,
+        artifact: { type: "image", url: "assets/images/Yankees-Rangers.jpg" },
+        contributorCredit: "Contributor submission (anonymous)",
+        soundtrack: { label: "Take Me Out to the Ballgame — The Countdown Kids", spotifyUrl: "https://open.spotify.com/track/5mM9caYjRbrZ8kYpVt9Vy6" }
+      },
+      {
+        id: "BX-0013",
+        title: "Lesbian Lovers",
+        neighborhood: "South Bronx",
+        decade: "2020s",
+        tags: ["afro-latinx-bronx", "queer-bronx-life", "music-memory"],
+        lat: 40.8090, lng: -73.9290,
+        story: `My partner of now 5 years and I got matching tattoos literally a year into dating each other.`,
+        artifact: { type: "image", url: "assets/images/Lesbian-Lovers.jpeg" },
+        contributorCredit: "Contributor submission (anonymous)",
+        soundtrack: { label: "Free Mind — Tems", spotifyUrl: "https://open.spotify.com/track/2mzM4Y0Rnx2BDZqRnhQ5Q6" }
+      },
+      {
+        id: "BX-0014",
+        title: "PS.33",
+        neighborhood: "Fordham",
+        decade: "2000s",
+        tags: ["everyday-bronx-life", "growing-up-in-the-bronx", "community-care"],
+        lat: 40.8614, lng: -73.8978,
+        story: `I don't remember much from this day, but I loved my elementary school. We had a performance out in the yard, and my mom let me wear my favorite dress and bring a disposable camera. At one point, a random second grader photobombed my picture while doing pull-ups.`,
+        artifact: { type: "image", url: "assets/images/PS33.jpeg" },
+        contributorCredit: "Contributor submission (anonymous)",
+      },
+      {
+        id: "BX-0015",
+        title: "The Life of the Party",
+        neighborhood: "Concourse",
+        decade: "2020s",
+        tags: ["growing-up-in-the-bronx", "block-parties", "black-bronx-life"],
+        lat: 40.8345, lng: -73.9180,
+        story: `My partner invited me to their mom's birthday party. She's also from the Bronx and loves it — honestly, maybe even more than most. Watching my partner interact with everyone, showing so much love and grace, reminded me exactly why I fell in love with them. This photo is of them on the dance floor, with everyone cheering them on. They are beautiful.`,
+        artifact: { type: "image", url: "assets/images/Life-of-Party.jpeg" },
+        contributorCredit: "Contributor submission (anonymous)",
+        soundtrack: { label: "Just Fine — Mary J. Blige", spotifyUrl: "https://open.spotify.com/track/33vzOPcd9FRirYGlCu32x4" }
+      },
+      {
+        id: "BX-0016",
+        title: "Weekend at Berto's",
+        neighborhood: "Hunts Point",
+        decade: "Early 2000s",
+        tags: ["growing-up-in-the-bronx", "community-care", "afro-latinx-bronx"],
+        lat: 40.8120, lng: -73.8880,
+        story: `I grew up spending weekends with my dad in the Bronx. He's Dominican and his cousin owns a restaurant off the Hunts Point stop. At the time my brother and I didn't know the actual name of the place, but we knew it as Berto's. We went to Berto's for dinner every weekend as a family and it was one of the best parts of my childhood. Watching my dad interact with our family, sitting at the bar on the shiny metal stools with red cracked leather tops.\n\nBerto had a pool table in the basement and ritualistically, we'd have dinner upstairs and head down to the basement to watch our dad play pool. Sometimes my brother and I would play against each other but there was one night specifically — being both in our teens by now. My brother and I challenged our dad to play with an arm behind his back. 4 Heinekens in, my dad absolutely wipes the floor with us. It's a memory I hold dear to me.`,
+        contributorCredit: "Contributor submission (Josue)",
+      }
     ];
 
     /* =====================================================
@@ -1296,6 +1366,7 @@
       "1980s":       "#2E86AB",
       "1990s":       "#E07A5F",
       "2000s":       "#D4A020",
+      "Early 2000s": "#D4A020",
       "2010s":       "#81B29A",
       "2020s":       "#B83227",
     };
@@ -1316,6 +1387,170 @@
     const markerById  = new Map();
     const bronxBounds = L.latLngBounds(BRONX_BOUNDS);
 
+
+    /* =====================================================
+       SECTION D2: BRONX SUBWAY LINES — PROXIMITY ANALYSIS
+       Each pill highlights memories near that corridor.
+       "Near" = within 0.4 miles of any stop on the line.
+    ===================================================== */
+    const SUBWAY_LINES = [
+      { name:"4", color:"#00933C", stops:[
+        {name:"Woodlawn",lat:40.8886,lng:-73.8789},{name:"Mosholu Pkwy",lat:40.8803,lng:-73.8788},
+        {name:"Bedford Park Blvd",lat:40.8733,lng:-73.8788},{name:"Kingsbridge Rd",lat:40.8681,lng:-73.8837},
+        {name:"Fordham Rd",lat:40.8622,lng:-73.8888},{name:"183rd St",lat:40.8581,lng:-73.8921},
+        {name:"Burnside Ave",lat:40.8532,lng:-73.8963},{name:"176th St",lat:40.8488,lng:-73.8996},
+        {name:"Mt Eden Ave",lat:40.8443,lng:-73.9038},{name:"170th St",lat:40.8402,lng:-73.9079},
+        {name:"167th St",lat:40.8356,lng:-73.9113},{name:"161st St–Yankee Stadium",lat:40.8277,lng:-73.9254},
+        {name:"149th St–Grand Concourse",lat:40.8183,lng:-73.9276},{name:"138th St–Grand Concourse",lat:40.8133,lng:-73.9294}
+      ]},
+      { name:"5", color:"#00933C", stops:[
+        {name:"Nereid Ave",lat:40.8984,lng:-73.8427},{name:"233rd St",lat:40.8944,lng:-73.8463},
+        {name:"225th St",lat:40.8888,lng:-73.8508},{name:"219th St",lat:40.8844,lng:-73.8546},
+        {name:"Gun Hill Rd",lat:40.8773,lng:-73.8609},{name:"Burke Ave",lat:40.8713,lng:-73.8658},
+        {name:"Allerton Ave",lat:40.8655,lng:-73.8673},{name:"Pelham Pkwy",lat:40.8576,lng:-73.8607},
+        {name:"Morris Park",lat:40.8548,lng:-73.8503},{name:"E Tremont Ave",lat:40.8397,lng:-73.8797},
+        {name:"174th–175th St",lat:40.8367,lng:-73.8862},{name:"Freeman St",lat:40.8295,lng:-73.8923},
+        {name:"Simpson St",lat:40.8244,lng:-73.8937},{name:"Intervale Ave",lat:40.8221,lng:-73.8966},
+        {name:"Prospect Ave",lat:40.8195,lng:-73.9003},{name:"Jackson Ave",lat:40.8163,lng:-73.9074},
+        {name:"3rd Ave–149th St",lat:40.8164,lng:-73.9171}
+      ]},
+      { name:"2", color:"#EE352E", stops:[
+        {name:"149th St–Grand Concourse",lat:40.8183,lng:-73.9276},
+        {name:"3rd Ave–149th St",lat:40.8164,lng:-73.9171},
+        {name:"Jackson Ave",lat:40.8163,lng:-73.9074},
+        {name:"Prospect Ave",lat:40.8195,lng:-73.9003},
+        {name:"Intervale Ave",lat:40.8221,lng:-73.8966},
+        {name:"Simpson St",lat:40.8244,lng:-73.8937},
+        {name:"Freeman St",lat:40.8295,lng:-73.8923},
+        {name:"174th–175th St",lat:40.8367,lng:-73.8862},
+        {name:"E Tremont Ave",lat:40.8397,lng:-73.8797},
+        {name:"Morris Park",lat:40.8548,lng:-73.8503},
+        {name:"Pelham Pkwy",lat:40.8576,lng:-73.8607},
+        {name:"Allerton Ave",lat:40.8655,lng:-73.8673},
+        {name:"Burke Ave",lat:40.8713,lng:-73.8658},
+        {name:"Gun Hill Rd",lat:40.8773,lng:-73.8609},
+        {name:"219th St",lat:40.8844,lng:-73.8546},
+        {name:"225th St",lat:40.8888,lng:-73.8508},
+        {name:"233rd St",lat:40.8944,lng:-73.8463},
+        {name:"Nereid Ave",lat:40.8984,lng:-73.8427},
+        {name:"Wakefield–241st St",lat:40.9034,lng:-73.8507}
+      ]},
+      { name:"6", color:"#00933C", stops:[
+        {name:"Pelham Bay Park",lat:40.8647,lng:-73.8282},{name:"Buhre Ave",lat:40.8545,lng:-73.8303},
+        {name:"Middletown Rd",lat:40.8437,lng:-73.8325},{name:"Westchester Sq",lat:40.8396,lng:-73.8420},
+        {name:"Zerega Ave",lat:40.8367,lng:-73.8475},{name:"Castle Hill Ave",lat:40.8340,lng:-73.8518},
+        {name:"Parkchester",lat:40.8332,lng:-73.8601},{name:"St Lawrence Ave",lat:40.8310,lng:-73.8677},
+        {name:"Morrison Ave–Soundview",lat:40.8286,lng:-73.8744},{name:"Elder Ave",lat:40.8256,lng:-73.8793},
+        {name:"Whitlock Ave",lat:40.8236,lng:-73.8862},{name:"Hunts Point Ave",lat:40.8205,lng:-73.8903},
+        {name:"Longwood Ave",lat:40.8165,lng:-73.8963},{name:"E 149th St",lat:40.8134,lng:-73.9043},
+        {name:"E 143rd St–St Mary's",lat:40.8090,lng:-73.9071},{name:"Cypress Ave",lat:40.8054,lng:-73.9099},
+        {name:"Brook Ave",lat:40.8007,lng:-73.9196},{name:"3rd Ave–138th St",lat:40.8092,lng:-73.9265}
+      ]},
+      { name:"B/D", color:"#FF6319", stops:[
+        {name:"Norwood–205th St",lat:40.8749,lng:-73.8781},{name:"Bedford Park Blvd–Lehman",lat:40.8733,lng:-73.8864},
+        {name:"Kingsbridge Rd",lat:40.8681,lng:-73.8987},{name:"Fordham Rd",lat:40.8622,lng:-73.9014},
+        {name:"182nd–183rd St",lat:40.8573,lng:-73.9034},{name:"Tremont Ave",lat:40.8504,lng:-73.9055},
+        {name:"174th St",lat:40.8439,lng:-73.9091},{name:"170th St",lat:40.8388,lng:-73.9121},
+        {name:"167th St",lat:40.8356,lng:-73.9155},{name:"161st St–Yankee Stadium",lat:40.8277,lng:-73.9254}
+      ]},
+      { name:"1", color:"#EE352E", stops:[
+        {name:"225th St",lat:40.8740,lng:-73.9100},{name:"215th St",lat:40.8693,lng:-73.9148},
+        {name:"207th St",lat:40.8646,lng:-73.9193}
+      ]},
+    ];
+
+    // Distance between two lat/lng points in miles
+    function distMiles(lat1, lng1, lat2, lng2) {
+      const R = 3958.8;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLng = (lng2 - lng1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLng/2) * Math.sin(dLng/2);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    // Returns true if entry is within 0.4 miles of any stop on the line
+    function isNearLine(entry, line) {
+      return line.stops.some(stop => distMiles(entry.lat, entry.lng, stop.lat, stop.lng) <= 0.4);
+    }
+
+    const trainLayerGroup = L.layerGroup();
+    let activeLineName = null;
+
+    function drawLine(line) {
+      trainLayerGroup.clearLayers();
+      const coords = line.stops.map(s => [s.lat, s.lng]);
+      L.polyline(coords, { color: line.color, weight: 4, opacity: 0.85, lineCap: "round", lineJoin: "round" }).addTo(trainLayerGroup);
+      line.stops.forEach(stop => {
+        L.circleMarker([stop.lat, stop.lng], { radius: 4, fillColor: "white", color: line.color, weight: 2, fillOpacity: 1 }).addTo(trainLayerGroup);
+        L.marker([stop.lat, stop.lng], {
+          icon: L.divIcon({ className: "", html: `<div class="train-stop-label">${stop.name}</div>`, iconAnchor: [-8, 6] }),
+          interactive: false
+        }).addTo(trainLayerGroup);
+      });
+      trainLayerGroup.addTo(map);
+    }
+
+    function highlightNearby(line) {
+      // Dim/brighten dots
+      markerById.forEach((marker, id) => {
+        const entry = entries.find(e => e.id === id);
+        if (!entry) return;
+        const el = marker.getElement();
+        if (!el) return;
+        const dot = el.querySelector("div");
+        if (!dot) return;
+        const near = isNearLine(entry, line);
+        dot.style.opacity = near ? "1" : "0.15";
+        dot.style.transform = near ? "scale(1.3)" : "scale(1)";
+      });
+
+      // Filter sidebar cards
+      const nearby = entries.filter(e => isNearLine(e, line));
+      renderCards(nearby);
+      document.getElementById("count").innerHTML =
+        `<strong>${nearby.length}</strong> memor${nearby.length===1?"y":"ies"} near the <strong style="color:${line.color}">${line.name}</strong> train`;
+    }
+
+    function clearTrainHighlight() {
+      markerById.forEach((marker) => {
+        const el = marker.getElement();
+        if (!el) return;
+        const dot = el.querySelector("div");
+        if (!dot) return;
+        dot.style.opacity = "1";
+        dot.style.transform = "scale(1)";
+      });
+      trainLayerGroup.clearLayers();
+      renderCards(entries);
+    }
+
+    function initTrainPills() {
+      const container = document.getElementById("trainPills");
+      SUBWAY_LINES.forEach(line => {
+        const pill = document.createElement("button");
+        pill.className = "train-pill";
+        pill.dataset.line = line.name;
+        pill.innerHTML = `<span class="train-badge" style="background:${line.color}">${line.name}</span>${line.name} train`;
+        pill.addEventListener("click", () => {
+          const isActive = activeLineName === line.name;
+          // Reset all pills
+          container.querySelectorAll(".train-pill").forEach(p => p.classList.remove("active"));
+          if (isActive) {
+            // Toggle off
+            activeLineName = null;
+            clearTrainHighlight();
+          } else {
+            activeLineName = line.name;
+            pill.classList.add("active");
+            drawLine(line);
+            highlightNearby(line);
+          }
+        });
+        container.appendChild(pill);
+      });
+    }
 
     /* =====================================================
        SECTION E: HELPERS
@@ -1764,6 +1999,9 @@
       // Wire up mobile submit button
       const submitMobile = document.getElementById("submitLinkMobile");
       if (submitMobile) submitMobile.href = SUBMIT_URL;
+
+      // Init subway line proximity pills
+      initTrainPills();
 
       // Patterns panel toggle
       document.getElementById("patternsToggle").addEventListener("click", () => {
