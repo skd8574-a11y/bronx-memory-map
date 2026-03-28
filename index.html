@@ -527,6 +527,102 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
 
+    .about-link {
+      margin-top: 8px;
+      background: none;
+      border: none;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 0;
+      text-transform: uppercase;
+      transition: color 0.15s;
+    }
+    .about-link:hover { color: var(--gold); }
+    .about-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .about-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+    }
+    .about-panel {
+      position: relative;
+      background: var(--cream);
+      border-radius: 16px;
+      padding: 28px;
+      max-width: 520px;
+      width: 100%;
+      max-height: 80dvh;
+      overflow-y: auto;
+      border-top: 4px solid var(--rust);
+    }
+    .about-close {
+      position: absolute;
+      top: 16px; right: 18px;
+      background: none;
+      border: none;
+      font-size: 14px;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .about-close:hover { color: var(--ink); }
+    .about-kicker {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 6px;
+    }
+    .about-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+    .about-body p {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #4A3E30;
+      margin-bottom: 14px;
+    }
+    .about-meta {
+      font-family: 'IBM Plex Mono', monospace !important;
+      font-size: 10px !important;
+      color: var(--muted) !important;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      margin-top: 4px;
+    }
+    .about-submit-btn {
+      display: inline-block;
+      margin-top: 14px;
+      background: var(--rust);
+      color: white;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 10px 20px;
+      border-radius: 999px;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .about-submit-btn:hover { background: var(--rust2); }
+
     /* =====================================================
        SECTION 8b: 4 TRAIN OVERLAY
     ===================================================== */
@@ -1068,6 +1164,7 @@
         <div class="header-kicker">Against the Caption · Bronx Memory Map</div>
         <h1 class="title">The Bronx <em>Remembers</em></h1>
         <p class="why-statement">Most stories about the Bronx are told from the outside. This archive belongs to the people who lived it.</p>
+        <button class="about-link" id="aboutBtn">About this project ↗</button>
       </div>
 
       <div class="stats-bar" id="statsBar">
@@ -1144,6 +1241,23 @@
       </div>
     </main>
 
+  </div>
+
+  <!-- ABOUT MODAL -->
+  <div class="about-modal" id="aboutModal" style="display:none;">
+    <div class="about-backdrop" id="aboutBackdrop"></div>
+    <div class="about-panel">
+      <button class="about-close" id="aboutClose">✕</button>
+      <div class="about-kicker">Against the Caption · Bronx Memory Map</div>
+      <h2 class="about-title">About This Project</h2>
+      <div class="about-body">
+        <p>The Bronx has been written about from the outside for decades, through crime statistics, urban planning reports, and media narratives that frame the borough through crisis or spectacle. This archive is a counter to that.</p>
+        <p><strong>Against the Caption</strong> is a community-built memory map of the Bronx, where each dot on the map represents a real memory from a real person tied to a real place. The archive collects the stories that don't make the news: the corner store, the block party, the summer, the person you miss.</p>
+        <p>The goal is not just documentation. As the archive grows, it becomes a dataset of lived experience that reveals how the borough is actually remembered by the people who lived it.</p>
+        <p class="about-meta">Built by <strong>Shantell K Duran</strong> · NYU SPS, Data Analytics & Visualization · Senior Capstone 2026</p>
+        <a class="about-submit-btn" href="https://tally.so/r/81dD5O" target="_blank" rel="noreferrer">Add your memory →</a>
+      </div>
+    </div>
   </div>
 
 
@@ -1662,13 +1776,52 @@
       }).join("");
 
       body.innerHTML = `
-        <p class="pattern-note">With 16 memories so far, early patterns are already visible. Most submissions are from the 2020s, reflecting who has encountered the archive rather than the full scope of Bronx memory. The near absence of the 1980s and 1990s signals a gap in participation, where earlier histories remain underrepresented. The most common themes, growing up, everyday life, and the block, show that memory is anchored in routine, place-based experience rather than major events. This directly challenges dominant narratives of the Bronx, which are often framed through crisis or spectacle. The archive instead reveals a consistent pattern: the borough is remembered through the everyday.</p>
+        <p class="pattern-note">${buildPatternNote(list)}</p>
         <div class="patterns-sub">By decade</div>
         ${decadeRows || '<span class="pattern-empty">No data yet</span>'}
         <hr class="pattern-divider"/>
         <div class="patterns-sub">By theme</div>
         ${tagRows || '<span class="pattern-empty">No data yet</span>'}
       `;
+    }
+
+    function buildPatternNote(list) {
+      const total    = list.length;
+      const allTotal = entries.length;
+
+      // Check if any filters are active
+      const q      = normalize(document.getElementById("q")?.value || "");
+      const decade = document.getElementById("decade")?.value || "all";
+      const hood   = document.getElementById("hood")?.value || "all";
+      const tag    = document.getElementById("tag")?.value || "all";
+      const isFiltered = total < allTotal && (q || decade !== "all" || hood !== "all" || tag !== "all");
+
+      if (total === 0) return "No memories match the current filter.";
+
+      // Full archive — show the real analytical paragraph
+      if (!isFiltered) {
+        return `With ${total} memories so far, early patterns are already visible. Most submissions are from the 2020s, reflecting who has encountered the archive rather than the full scope of Bronx memory. The near absence of the 1980s and 1990s signals a gap in participation, where earlier histories remain underrepresented. The most common themes, growing up, everyday life, and the block, show that memory is anchored in routine, place-based experience rather than major events. This directly challenges dominant narratives of the Bronx, which are often framed through crisis or spectacle. The archive instead reveals a consistent pattern: the borough is remembered through the everyday.`;
+      }
+
+      // Filtered — generate a short contextual note
+      const nbhds = new Set(list.map(e => e.neighborhood)).size;
+      const decadeCounts = {};
+      list.forEach(e => {
+        const k = e.decade === "Early 2000s" ? "2000s" : e.decade;
+        decadeCounts[k] = (decadeCounts[k] || 0) + 1;
+      });
+      const topDecade = Object.entries(decadeCounts).sort((a,b) => b[1]-a[1])[0];
+
+      const parts = [];
+      if (decade !== "all") parts.push(`Filtering by the ${decade}.`);
+      if (hood !== "all") parts.push(`Looking at ${hood}.`);
+      if (tag !== "all") parts.push(`Filtered by theme: ${tag.replaceAll("-"," ")}.`);
+      if (q) parts.push(`Searching for "${q}".`);
+
+      parts.push(`${total} memor${total === 1 ? "y" : "ies"} across ${nbhds} neighborhood${nbhds === 1 ? "" : "s"}.`);
+      if (topDecade && !decade || decade === "all") parts.push(`Most are from the ${topDecade[0]}.`);
+
+      return parts.join(" ");
     }
     function spotifyEmbed(spotifyUrl) {
       const trackId = spotifyUrl.match(/track\/([a-zA-Z0-9]+)/)?.[1];
@@ -2001,6 +2154,15 @@
       // Wire up mobile submit button
       const submitMobile = document.getElementById("submitLinkMobile");
       if (submitMobile) submitMobile.href = SUBMIT_URL;
+
+      // About modal
+      const aboutModal   = document.getElementById("aboutModal");
+      const aboutBtn     = document.getElementById("aboutBtn");
+      const aboutClose   = document.getElementById("aboutClose");
+      const aboutBackdrop = document.getElementById("aboutBackdrop");
+      if (aboutBtn) aboutBtn.addEventListener("click", () => aboutModal.style.display = "flex");
+      if (aboutClose) aboutClose.addEventListener("click", () => aboutModal.style.display = "none");
+      if (aboutBackdrop) aboutBackdrop.addEventListener("click", () => aboutModal.style.display = "none");
 
       // Init subway line proximity pills
       initTrainPills();
